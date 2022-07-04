@@ -4,9 +4,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShababTrade"
+        xmlns:vm="clr-namespace:ShababTrade.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Title="Shabab Trade" Height="450" Width="800" 
+        WindowState="Maximized" Background="#FF111111">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
+            <Button Background="{Binding AccountTabBackground}" BorderBrush="Black" Cursor="Hand" Margin="2" Command="{Binding SelectAccountTabCommand}" CommandParameter="Account" Content="Account" />
+            <Button Background="{Binding TradeHistoryTabBackground}" BorderBrush="Black" Cursor="Hand" Margin="2" Command="{Binding SelectAccountTabCommand}" CommandParameter="History" Content="Trade History" />
+            <Button Background="{Binding SpotTabBackground}" BorderBrush="Black" Cursor="Hand" Margin="2" Command="{Binding SelectAccountTabCommand}" CommandParameter="Spot" Content="Spot" />
+            <Button Background="{Binding AutoTradingTabBackground}" BorderBrush="Black" Cursor="Hand" Margin="2" Command="{Binding SelectAccountTabCommand}" CommandParameter="Auto" Content="Auto Trading" />
+            <Button Background="{Binding FuturesTabBackground}" BorderBrush="Black" Cursor="Hand" Margin="2" Command="{Binding SelectAccountTabCommand}" CommandParameter="Futures" Content="Futures" />
+        </StackPanel>
+        <ContentControl>
+            
+        </ContentControl>
+    </DockPanel>
 </Window>
