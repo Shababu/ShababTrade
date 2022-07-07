@@ -12,6 +12,5 @@
         <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="Foreground" Value="White"/>
     </Style>
-    
-    
+
 </ResourceDictionary>
