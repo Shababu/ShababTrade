@@ -5,22 +5,62 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShababTrade"
         xmlns:vm="clr-namespace:ShababTrade.ViewModels"
+        xmlns:views="clr-namespace:ShababTrade.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="Shabab Trade" Height="450" Width="800" 
         WindowState="Maximized" Background="#FF111111">
+    
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
-    <DockPanel>
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
-            <Button Background="{Binding AccountTabBackground}" BorderBrush="Black" Cursor="Hand" Margin="2" Command="{Binding SelectAccountTabCommand}" CommandParameter="Account" Content="Account" />
-            <Button Background="{Binding TradeHistoryTabBackground}" BorderBrush="Black" Cursor="Hand" Margin="2" Command="{Binding SelectAccountTabCommand}" CommandParameter="History" Content="Trade History" />
-            <Button Background="{Binding SpotTabBackground}" BorderBrush="Black" Cursor="Hand" Margin="2" Command="{Binding SelectAccountTabCommand}" CommandParameter="Spot" Content="Spot" />
-            <Button Background="{Binding AutoTradingTabBackground}" BorderBrush="Black" Cursor="Hand" Margin="2" Command="{Binding SelectAccountTabCommand}" CommandParameter="Auto" Content="Auto Trading" />
-            <Button Background="{Binding FuturesTabBackground}" BorderBrush="Black" Cursor="Hand" Margin="2" Command="{Binding SelectAccountTabCommand}" CommandParameter="Futures" Content="Futures" />
-        </StackPanel>
-        <ContentControl>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Border Grid.Row="0" Grid.Column="0" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5"  Visibility="{Binding MainMenuVisibility}">
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Button Style="{StaticResource MainTabStyle}" Background="{Binding AccountTabBackground}"      Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Account" Content="Account" Cursor="Hand"/>
+                <Button Style="{StaticResource MainTabStyle}" Background="{Binding TradeHistoryTabBackground}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="History" Content="Trade History"/>
+                <Button Style="{StaticResource MainTabStyle}" Background="{Binding SpotTabBackground}"         Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Spot"    Content="Spot"/>
+                <Button Style="{StaticResource MainTabStyle}" Background="{Binding AutoTradingTabBackground}"  Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Auto"    Content="Auto Trading"/>
+                <Button Style="{StaticResource MainTabStyle}" Background="{Binding FuturesTabBackground}"      Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Futures" Content="Futures"/>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="0" BorderThickness="3" CornerRadius="5" Width="350" Height="430"
+            BorderBrush="{StaticResource PrimaryColorBrush}" Background="{StaticResource PrimaryCardBrush}" 
+            Visibility="{Binding LoginViewVisibility}">
+
+            <StackPanel>
+                <TextBlock Style="{StaticResource TextBlockH1}" Margin="0 30 0 0"   Text="Login" TextAlignment="Center"  Foreground="{StaticResource SecondaryTextBursh}"/>
+                <TextBox   Style="{StaticResource TextBoxH2}"   Margin="10 30 10 0" Text="{Binding Username}" materialDesign:HintAssist.IsFloating="True">
+                    <materialDesign:HintAssist.Hint>
+                        <TextBlock Foreground="{StaticResource SecondaryTextBursh}" Text="Username"/>
+                    </materialDesign:HintAssist.Hint>
+                </TextBox>
+                <TextBox   Style="{StaticResource TextBoxH2}"   Margin="10 20 10 0" Text="{Binding Password}" materialDesign:HintAssist.IsFloating="True">
+                    <materialDesign:HintAssist.Hint>
+                        <TextBlock Foreground="{StaticResource SecondaryTextBursh}" Text="Password"/>
+                    </materialDesign:HintAssist.Hint>
+                </TextBox>
+                <Button    Style="{StaticResource LoginButtonStyle}" Margin="10 50 10 0" FontSize="20" Content="Login" Height="40" 
+                           Background="{StaticResource SecondaryColorBrush}" Command="{Binding LoginCommand}" Cursor="Hand"/>
+                <TextBlock Margin="0 20 0 0" FontSize="16" TextAlignment="Center" >
+                <Run       Foreground="{StaticResource SecondaryTextBursh}" Text="Not a member?"/>
+                <Hyperlink Foreground="{StaticResource HyperlinkColorBrush}">Sign in</Hyperlink>
+                </TextBlock>
+            </StackPanel>
+
+        </Border>
+
+        <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding CurrentViewModel}" Visibility="{Binding MainMenuVisibility}">
             
         </ContentControl>
-    </DockPanel>
+    </Grid>
 </Window>

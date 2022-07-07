@@ -12,7 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BinanceAPI" Version="1.0.3" />
+    <PackageReference Include="BitrueAPI" Version="1.0.2" />
     <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
   </ItemGroup>
 
 </Project>

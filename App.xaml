@@ -2,15 +2,73 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ShababTrade"
+             xmlns:views="clr-namespace:ShababTrade.Views"
+             xmlns:viewModels="clr-namespace:ShababTrade.ViewModels"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
+
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Grey.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+                <ResourceDictionary Source="Styles/Buttons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate DataType="{x:Type viewModels:AccountViewModel}">
+                <views:AccountView/>
+            </DataTemplate>
+
+            <SolidColorBrush Color="#D81D3C" x:Key="PrimaryColorBrush"/>
+            <SolidColorBrush Color="#2D2D2D" x:Key="SecondaryColorBrush"/>
+            <SolidColorBrush Color="White" x:Key="PrimaryTextBursh"/>
+            <SolidColorBrush Color="Black" x:Key="SecondaryTextBursh"/>
+            <SolidColorBrush Color="White" x:Key="PrimaryCardBrush"/>
+            <SolidColorBrush Color="DodgerBlue" x:Key="HyperlinkColorBrush"/>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBursh}"/>
+            </Style>
+
+
+            <Style TargetType="TextBlock" x:Key="TextBlockH1" BasedOn="{StaticResource MaterialDesignHeadline3TextBlock}">
+                <Setter Property="FontSize" Value="36"/>
+            </Style>
+
+            <Style TargetType="TextBlock" x:Key="TextBlockH2" BasedOn="{StaticResource MaterialDesignHeadline3TextBlock}">
+                <Setter Property="FontSize" Value="20"/>
+            </Style>
+
+            <Style TargetType="TextBlock" x:Key="TextBlockH3" BasedOn="{StaticResource MaterialDesignHeadline3TextBlock}">
+                <Setter Property="FontSize" Value="16"/>
+            </Style>
+
+            <Style TargetType="TextBlock" x:Key="TextBlockH4" BasedOn="{StaticResource MaterialDesignHeadline3TextBlock}">
+                <Setter Property="FontSize" Value="12"/>
+            </Style>
+
+
+            <Style TargetType="TextBox" x:Key="TextBoxH1" BasedOn="{StaticResource MaterialDesignTextBox}">
+                <Setter Property="FontSize" Value="36"/>
+                <Setter Property="Foreground" Value="{StaticResource SecondaryTextBursh}"/>
+            </Style>
+
+            <Style TargetType="TextBox" x:Key="TextBoxH2" BasedOn="{StaticResource MaterialDesignTextBox}">
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="Foreground" Value="{StaticResource SecondaryTextBursh}"/>
+            </Style>
+
+            <Style TargetType="TextBox" x:Key="TextBoxH3" BasedOn="{StaticResource MaterialDesignTextBox}">
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="Foreground" Value="{StaticResource SecondaryTextBursh}"/>
+            </Style>
+
+            <Style TargetType="TextBox" x:Key="TextBoxH4" BasedOn="{StaticResource MaterialDesignTextBox}">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="Foreground" Value="{StaticResource SecondaryTextBursh}"/>
+            </Style>
         </ResourceDictionary>
+        
     </Application.Resources>
 </Application>
