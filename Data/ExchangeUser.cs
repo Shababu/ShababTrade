@@ -48,9 +48,9 @@ namespace ShababTrade.Data
             }
 
             return appUsers;
-        }
+        } 
 
-        public static List<ExchangeUser> GetAppUserByLoginAndPawwsord(string login, string password)
+        public static List<ExchangeUser> GetExchangeUsersByLoginAndPawwsord(string login, string password)
         {
             List<ExchangeUser> appUsers = new List<ExchangeUser>();
             ExchangeUser user;
@@ -60,8 +60,12 @@ namespace ShababTrade.Data
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string sql = $"Select UserInfo.UserId, UserInfo.Login, UserInfo.Password, KeyPairs.Exchange, " +
-                    $"KeyPairs.PublicKey, KeyPairs.PrivateKey from UserInfo join KeyPairs on UserInfo.UserId = KeyPairs.UserId where Login = '{login}' AND Password = '{password}'";
+                string sql = $"SELECT UserInfo.UserId, UserInfo.Login, UserInfo.Password, KeyPairs.Exchange, " +
+                             $"KeyPairs.PublicKey, KeyPairs.PrivateKey " +
+                             $"FROM UserInfo " +
+                             $"JOIN KeyPairs on UserInfo.UserId = KeyPairs.UserId " +
+                             $"WHERE Login = '{login}' AND Password = '{password}'";
+
                 SqlCommand command = new SqlCommand(sql, connection);
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -81,7 +85,7 @@ namespace ShababTrade.Data
             }
 
             return appUsers;
-        }
+        } 
 
         public static bool TryInsertNewUser(string username, string password, string exchange, string publicKey, string privateKey, out string resultMessage)
         {
@@ -92,98 +96,135 @@ namespace ShababTrade.Data
             {
                 connection.Open();
 
-                var isUserRegestered = TryGetUserInfoByLogin(username);
+                var isUserRegistered = TryGetUserInfoByLogin(username);
 
-                if (!isUserRegestered)
+                if (!isUserRegistered)
                 {
-                    sql = $"Insert into UserInfo(Login, Password)" +
-                          $"Values ('{username}', '{password}')";
-                    UserInfo userInfo;
-
-                    try
+                    isUserRegistered = RegisterUser(username, password, exchange, publicKey, privateKey, connection, out resultMessage);
+                    if (isUserRegistered) 
                     {
-                        SqlCommand command = new SqlCommand(sql, connection);
-                        command.ExecuteNonQuery();
+                        return true;
                     }
-                    catch (Exception ex)
-                    {
-                        connection.Close();
-                        resultMessage = "Error. Unable to add user into database";
-                        return false;
-                    }
-
-                    userInfo = GetUserInfoByLogin(username);
-
-                    sql = $"Insert into KeyPairs(Exchange, PublicKey, PrivateKey, UserId)" +
-                          $"Values ('{exchange}', '{publicKey}', '{privateKey}', '{userInfo.UserId}')";
-                    try
-                    {
-                        SqlCommand command = new SqlCommand(sql, connection);
-                        command.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        connection.Close();
-                        resultMessage = "Error. Unable to keys into database";
-                        return false;
-                    }
-
-                    connection.Close();
-                    resultMessage = $"Success. Api keys was assined to user: {username}";
-                    return true;
                 }
 
-                List<ExchangeUser> exchangeUsers;
+                bool addKeysResult = AddApiKeysToUser(username, password, exchange, publicKey, privateKey, connection, out resultMessage);
+
+                connection.Close();
+
+                return addKeysResult;               
+            }
+        }
+
+        public static bool TryGetExchangeUserByLogin(string username)
+        {
+            List<ExchangeUser> exchangeUsers = new List<ExchangeUser>();
+            exchangeUsers = GetExchangeUsersByLogin(username);
+            if (exchangeUsers.Count > 0)
+                return true;
+
+            return false;
+        } 
+
+        public static UserInfo GetUserInfoByLogin(string username)
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
+            UserInfo userInfo;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                var sql = $"SELECT UserInfo.UserId, Login, Password " +
+                          $"FROM UserInfo " +
+                          $"WHERE Login = '{username}'";
+
+                SqlCommand command = new SqlCommand(sql, connection);
 
                 try
                 {
-                    exchangeUsers = GetExchangeUserByLogin(username);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        reader.Read();
+                        var userId = (int)reader[0];
+                        var login = (string)reader[1];
+                        var password = (string)reader[2];
+
+                        userInfo = new UserInfo(userId, login, password);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    connection.Close();
-                    resultMessage = "Error. Unable to get user from database";
-                    return false;
-                }
-
-                var currentUsers = exchangeUsers.Where(user => user.Exchange == exchange);
-                ExchangeUser currentUser = new ExchangeUser();
-
-                if (currentUsers.Any())
-                {
-                    currentUser = currentUsers.First();
-                }
-
-                if (currentUser.Login == username && currentUser.PublicKey == publicKey && currentUser.PrivateKey == privateKey)
-                {
-                    resultMessage = $"Error. User {username} already has this pair of keys";
-                    return false;
-                }
-
-
-                sql = $"Insert into KeyPairs (Exchange, PublicKey, PrivateKey, UserId)" +
-                      $"Values ('{exchange}', '{publicKey}', '{privateKey}', '{exchangeUsers[0].UserId}')";
-
-                try
-                {
-                    SqlCommand command = new SqlCommand(sql, connection);
-                    command.ExecuteNonQuery();
-                    resultMessage = $"Success. Api keys was assined to user: {username}";
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    resultMessage = "Error. Unable to add keys into database";
-                    return false;
+                    return null;
                 }
                 finally
                 {
                     connection.Close();
                 }
             }
-        }
 
-        public static List<ExchangeUser> GetExchangeUserByLogin(string username)
+            return userInfo;
+        } 
+
+        public static bool TryGetUserInfoByLogin(string username)
+        {
+            UserInfo userInfo = GetUserInfoByLogin(username);
+            if (userInfo == null)
+                return false;
+
+            return true;
+        } 
+
+        public static void InsertUserInfo(string username, string password)
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
+            string sql;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                sql = $"Insert into UserInfo(Login, Password) " +
+                       $"Values ('{username}', '{password}')";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    connection.Close();
+                }
+            }
+        } 
+
+        public static void InsertKeyPairs(string exchange, string publicKey, string privateKey, int userId)
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
+            string sql;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                sql = $"Insert into KeyPairs(Exchange, PublicKey, PrivateKey, UserId)" +
+                      $"Values ('{exchange}', '{publicKey}', '{privateKey}', '{userId}')";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    connection.Close();
+                }
+            }
+        } 
+
+        private static List<ExchangeUser> GetExchangeUsersByLogin(string username)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
             List<ExchangeUser> exchangeUsers = new List<ExchangeUser>();
@@ -192,9 +233,10 @@ namespace ShababTrade.Data
             {
                 connection.Open();
 
-                var sql = $"Select UserInfo.UserId, Login, Password, Exchange, PublicKey, PrivateKey From UserInfo " +
-                          $"Join KeyPairs on KeyPairs.UserId = UserInfo.UserId " +
-                          $"Where Login = '{username}'";
+                var sql = $"SELECT UserInfo.UserId, Login, Password, Exchange, PublicKey, PrivateKey " +
+                          $"FROM UserInfo " +
+                          $"JOIN KeyPairs on KeyPairs.UserId = UserInfo.UserId " +
+                          $"WHERE Login = '{username}'";
 
                 try
                 {
@@ -226,64 +268,76 @@ namespace ShababTrade.Data
             }
 
             return exchangeUsers;
-        }
+        } 
 
-        public static bool TryGetExchangeUserByLogin(string username)
+        private static bool RegisterUser(string username, string password, string exchange, string publicKey, string privateKey, SqlConnection connection, out string resultMessage)
         {
-            List<ExchangeUser> exchangeUsers = new List<ExchangeUser>();
-            exchangeUsers = GetExchangeUserByLogin(username);
-            if (exchangeUsers.Count > 0)
-                return true;
-
-            return false;
-        }
-
-        public static UserInfo GetUserInfoByLogin(string username)
-        {
-            var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
-            UserInfo userInfo;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
+                InsertUserInfo(username, password);
+            }
+            catch (Exception ex)
+            {
+                resultMessage = "Error. Unable to add user into database";
+                return false;
+            }
 
-                var sql = $"Select UserInfo.UserId, Login, Password " +
-                          $"From UserInfo " +
-                          $"Where Login = '{username}'";
+            UserInfo userInfo = GetUserInfoByLogin(username);
 
-                try
+            try
+            {
+                InsertKeyPairs(exchange, publicKey, privateKey, userInfo.UserId);
+            }
+            catch (Exception ex)
+            {
+                resultMessage = "Error. Unable to keys into database";
+                return false;
+            }
+
+            resultMessage = $"Success. {exchange} api keys was assined to user: {username}";
+            return true;
+        }
+
+        private static bool AddApiKeysToUser(string username, string password, string exchange, string publicKey, string privateKey, SqlConnection connection, out string resultMessage)
+        {
+            List<ExchangeUser> exchangeUsers;
+
+            try
+            {
+                exchangeUsers = GetExchangeUsersByLogin(username);
+            }
+            catch (Exception ex)
+            {
+                resultMessage = "Error. Unable to get user from database";
+                return false;
+            }
+
+            var currentExchangeUser = exchangeUsers.Where(user => user.Exchange == exchange);
+            ExchangeUser currentUser = new ExchangeUser();
+
+            if (currentExchangeUser.Any())
+            {
+                foreach (var user in currentExchangeUser)
                 {
-                    SqlCommand command = new SqlCommand(sql, connection);
-                    using (var reader = command.ExecuteReader())
+                    if (user.Login == username && user.PublicKey == publicKey && user.PrivateKey == privateKey)
                     {
-                        reader.Read();
-                        var userId = (int)reader[0];
-                        var login = (string)reader[1];
-                        var password = (string)reader[2];
-
-                        userInfo = new UserInfo(userId, login, password);
+                        resultMessage = $"Error. User {username} already has this pair of keys";
+                        return false;
                     }
-                }
-                catch (Exception ex)
-                {
-                    return null;
-                }
-                finally
-                {
-                    connection.Close();
                 }
             }
 
-            return userInfo;
-        }
-
-        public static bool TryGetUserInfoByLogin(string username)
-        {
-            UserInfo userInfo = GetUserInfoByLogin(username);
-            if (userInfo == null)
+            try
+            {
+                InsertKeyPairs(exchange, publicKey, privateKey, exchangeUsers[0].UserId);
+                resultMessage = $"Success. {exchange} api keys was assined to user: {username}";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                resultMessage = "Error. Unable to add keys into database";
                 return false;
-
-            return true;
+            }
         }
 
         public ExchangeUser(int userId, string login, string password, string exchange, string publicKey, string privateKey)
