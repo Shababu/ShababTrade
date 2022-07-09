@@ -17,7 +17,7 @@
     </Window.DataContext>
 
     <Window.Resources>
-        <ResourceDictionary Source="../Animations/LogiViewAnimations.xaml"/>
+        <ResourceDictionary Source="../Animations/LoginViewAnimations.xaml"/>
     </Window.Resources>
     
     <Grid>
@@ -39,41 +39,44 @@
             </StackPanel>
         </Border>
 
-        <Border x:Name="LoginView" Grid.Row="1" Grid.Column="0" BorderThickness="3" CornerRadius="5" Width="{Binding LoginViewWidth}" Height="{Binding LoginViewHeight}"
-            BorderBrush="{StaticResource PrimaryColorBrush}" Background="{StaticResource PrimaryCardBrush}" 
-            Visibility="{Binding LoginViewVisibility}">
+        <Border x:Name="LoginView" Grid.Row="1" Grid.Column="0" BorderThickness="3" CornerRadius="5" 
+                Width="{Binding LoginViewWidth}" Height="{Binding LoginViewHeight}" BorderBrush="{StaticResource PrimaryColorBrush}" 
+                Background="{StaticResource PrimaryCardBrush}" Visibility="{Binding LoginViewVisibility}">
 
             <ie:Interaction.Triggers>
                 <ie:DataTrigger Binding="{Binding IsSignUpButtonClicked}" Value="True" >
-                    <ie:ControlStoryboardAction Storyboard="{StaticResource LoginViewIncreaseWidthAnimation}" ControlStoryboardOption="Play"/>
+                    <ie:ControlStoryboardAction Storyboard="{StaticResource LoginViewIncreaseWidthAnimation}"/>
                 </ie:DataTrigger>
                 <ie:DataTrigger Binding="{Binding IsSignUpButtonClicked}" Value="False" >
-                    <ie:ControlStoryboardAction Storyboard="{StaticResource LoginViewDecreaseWidthAnimation}" ControlStoryboardOption="Play"/>
+                    <ie:ControlStoryboardAction Storyboard="{StaticResource LoginViewDecreaseWidthAnimation}"/>
                 </ie:DataTrigger>
             </ie:Interaction.Triggers>
             
             <StackPanel>
-                <TextBlock Style="{StaticResource TextBlockH1}" Margin="0 30 0 0"   Text="Login" TextAlignment="Center"  Foreground="{StaticResource SecondaryTextBursh}" Visibility="{Binding LoginLabelVisibility}" x:Name="LoginLabel"/>
-                <TextBox   Style="{StaticResource TextBoxH2}"   Margin="10 15 10 0" Text="{Binding Username}" materialDesign:HintAssist.IsFloating="True" x:Name="UsernameInput">
+                <TextBlock x:Name="LoginLabel"    Style="{StaticResource TextBlockH1}" Margin="0 30 0 0"   Text="Login" TextAlignment="Center"  
+                           Foreground="{StaticResource SecondaryTextBursh}" Visibility="{Binding LoginLabelVisibility}"/>
+                <TextBox   x:Name="UsernameInput" Style="{StaticResource TextBoxH2}"   Margin="10 15 10 0" Text="{Binding Username}" 
+                           materialDesign:HintAssist.IsFloating="True">
                     <materialDesign:HintAssist.Hint>
                         <TextBlock Foreground="{StaticResource SecondaryTextBursh}" Text="Username"/>
                     </materialDesign:HintAssist.Hint>
                 </TextBox>
-                <TextBox   Style="{StaticResource TextBoxH2}"   Margin="10 20 10 0" Text="{Binding Password}" materialDesign:HintAssist.IsFloating="True" x:Name="PasswordInput" Cursor="Arrow">
+                <TextBox   x:Name="PasswordInput" Style="{StaticResource TextBoxH2}"   Margin="10 20 10 0" Text="{Binding Password}" 
+                           materialDesign:HintAssist.IsFloating="True">
                     <materialDesign:HintAssist.Hint>
                         <TextBlock Foreground="{StaticResource SecondaryTextBursh}" Text="Password"/>
                     </materialDesign:HintAssist.Hint>
                 </TextBox>
                 <TextBlock Style="{StaticResource TextBlockH3}" Margin="0 25 0 0" Text="Incorrect username or password" TextAlignment="Center"  
-                           Foreground="{StaticResource ErrorBrush}" Visibility="{Binding LoginErrorVisibility}"/>                
-                <Border BorderThickness="3" BorderBrush="{StaticResource PrimaryColorBrush}" Background="{StaticResource SecondaryColorBrush}" 
-                        CornerRadius="5" Height="265" Width="673" HorizontalAlignment="Left" Margin="10 10 0 0" Visibility="{Binding KeysSettingSectionVisibility}">
+                           Foreground="{StaticResource ErrorBrush}" Visibility="{Binding LoginErrorVisibility}"/>
+                <Border BorderThickness="3" CornerRadius="5" Height="265" Width="673" Margin="10 10 0 0" HorizontalAlignment="Left" 
+                        BorderBrush="{StaticResource PrimaryColorBrush}" Background="{StaticResource SecondaryColorBrush}" 
+                        Visibility="{Binding KeysSettingSectionVisibility}">
 
                     <StackPanel>
                         
                         <StackPanel Orientation="Horizontal" Margin="1 10 0 0">
                         <TextBlock Style="{StaticResource TextBlockH3}" Foreground="{StaticResource PrimaryColorBrush}" Text="Exchange:" Margin="8 0 0 0"/>
-
                             <ComboBox Width="100" Height="25" Margin="5 0 0 0" Padding="5 2 5 0" HorizontalContentAlignment="Left" VerticalAlignment="Top"
                               Background="{StaticResource SecondaryColorBrush}" Foreground="{StaticResource PrimaryTextBursh}" 
                               ItemsSource="{Binding AvailableExchanges}" SelectedItem="{Binding SelectedExchange}" SelectedIndex="0"
@@ -81,19 +84,20 @@
                             </ComboBox>
                         </StackPanel>
 
-                        <TextBox   Style="{StaticResource TextBoxH3}"   Margin="10 15 10 0" Text="{Binding RegisterPublicKey}" materialDesign:HintAssist.IsFloating="True" >
+                        <TextBox Style="{StaticResource TextBoxH3}" Margin="10 15 10 0" Text="{Binding RegisterPublicKey}" 
+                                 materialDesign:HintAssist.IsFloating="True" >
                             <materialDesign:HintAssist.Hint>
                                 <TextBlock Foreground="{StaticResource PrimaryTextBursh}" Text="Public Key"/>
                             </materialDesign:HintAssist.Hint>
                         </TextBox>
-                        <TextBox   Style="{StaticResource TextBoxH3}"   Margin="10 20 10 0" Text="{Binding RegisterPrivateKey}" materialDesign:HintAssist.IsFloating="True" Cursor="Arrow" >
+                        <TextBox Style="{StaticResource TextBoxH3}" Margin="10 20 10 0" Text="{Binding RegisterPrivateKey}" 
+                                 materialDesign:HintAssist.IsFloating="True" >
                             <materialDesign:HintAssist.Hint>
                                 <TextBlock Foreground="{StaticResource PrimaryTextBursh}" Text="Private Key"/>
                             </materialDesign:HintAssist.Hint>
                         </TextBox>
 
                         <Button Margin="0 15 0 0" Width="150"
-                                ToolTip="MaterialDesignFloatingActionMiniLightButton"
                                 Background="{StaticResource PrimaryColorBrush}"
                                 BorderBrush="{StaticResource SecondaryColorBrush}"
                                 Foreground="{StaticResource SecondaryColorBrush}"
@@ -101,10 +105,11 @@
                                 Command="{Binding AddApiKeysCommand}">
                         </Button>
 
-                        <TextBlock Style="{StaticResource TextBlockH3}" Margin="0 10 0 0" Text="{Binding RegisterUserResultText}" TextAlignment="Center"  
+                        <TextBlock Style="{StaticResource TextBlockH3}" Margin="0 10 0 0" TextAlignment="Center" Text="{Binding RegisterUserResultText}" 
                            Foreground="{Binding RegisterUserResultForeground}" Visibility="{Binding RegisterUserResultVisibility}"/>
                     </StackPanel>
                 </Border>
+                
                 <Button    Style="{StaticResource LoginButtonStyle}" Margin="10 20 10 0" FontSize="20" Content="Login" Height="40" 
                            Background="{StaticResource SecondaryColorBrush}" Command="{Binding LoginCommand}" Cursor="Hand"/>
                 <TextBlock Margin="0 20 0 0" FontSize="16" TextAlignment="Center" Visibility="{Binding SignupHyperlinkVisibility}">
