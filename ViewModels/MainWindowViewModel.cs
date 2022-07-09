@@ -2,6 +2,7 @@
 using BitrueApiLibrary;
 using ShababTrade.Commands;
 using ShababTrade.Data;
+using ShababTrade.Data.Models;
 using ShababTrade.ViewModels.Base;
 using System;
 using System.Collections.Generic;
@@ -382,7 +383,7 @@ namespace ShababTrade.ViewModels
         {
             if (!string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password))
             {
-                ExchangeUsers = ExchangeUser.GetExchangeUsersByUsernameAndPawwsord(Username, Password);
+                ExchangeUsers = ShababTradeDataAccessor.GetExchangeUsersByUsernameAndPawwsord(Username, Password);
                 if (ExchangeUsers.Count > 0)
                 {
                     List<string> avaliableExchanges = new List<string>();
@@ -449,7 +450,7 @@ namespace ShababTrade.ViewModels
             }
             else
             {
-                bool insertResult = ExchangeUser.TryInsertNewUser(Username, Password, SelectedExchange, RegisterPublicKey, RegisterPrivateKey, out resultMessage);
+                bool insertResult = ShababTradeDataAccessor.TryInsertNewUser(Username, Password, SelectedExchange, RegisterPublicKey, RegisterPrivateKey, out resultMessage);
                 if (insertResult)
                 {
                     RegisterUserResultForeground = new SolidColorBrush(Colors.Green);

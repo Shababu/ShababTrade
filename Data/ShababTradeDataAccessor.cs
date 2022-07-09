@@ -7,16 +7,8 @@ using System.Linq;
 
 namespace ShababTrade.Data
 {
-    internal class ExchangeUser
+    internal class ShababTradeDataAccessor
     {
-        public int UserId { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Exchange { get; set; }
-        public string PublicKey { get; }
-        public string PrivateKey { get; }
-
-
         public static List<ExchangeUser> GetAllAppUsers()
         {
             List<ExchangeUser> appUsers = new List<ExchangeUser>();
@@ -339,16 +331,5 @@ namespace ShababTrade.Data
                 return false;
             }
         }
-
-        public ExchangeUser(int userId, string username, string password, string exchange, string publicKey, string privateKey)
-        {
-            UserId = userId;
-            Username = username;
-            Password = password;
-            Exchange = exchange;
-            PublicKey = publicKey;
-            PrivateKey = privateKey;
-        }
-        public ExchangeUser() { }
     }
 }

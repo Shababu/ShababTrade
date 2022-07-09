@@ -13,6 +13,7 @@ using System.Windows.Media;
 using ShababTrade.Commands;
 using BitrueApiLibrary;
 using ShababTrade.Data;
+using ShababTrade.Data.Models;
 
 namespace ShababTrade.ViewModels
 {
