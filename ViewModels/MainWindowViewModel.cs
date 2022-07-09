@@ -382,7 +382,7 @@ namespace ShababTrade.ViewModels
         {
             if (!string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password))
             {
-                ExchangeUsers = ExchangeUser.GetExchangeUsersByLoginAndPawwsord(Username, Password);
+                ExchangeUsers = ExchangeUser.GetExchangeUsersByUsernameAndPawwsord(Username, Password);
                 if (ExchangeUsers.Count > 0)
                 {
                     List<string> avaliableExchanges = new List<string>();

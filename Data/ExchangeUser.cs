@@ -10,7 +10,7 @@ namespace ShababTrade.Data
     internal class ExchangeUser
     {
         public int UserId { get; set; }
-        public string Login { get; set; }
+        public string Username { get; set; }
         public string Password { get; set; }
         public string Exchange { get; set; }
         public string PublicKey { get; }
@@ -27,20 +27,20 @@ namespace ShababTrade.Data
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string sql = "Select UserInfo.UserId, UserInfo.Login, UserInfo.Password, KeyPairs.Exchange, " +
+                string sql = "Select UserInfo.UserId, UserInfo.Username, UserInfo.Password, KeyPairs.Exchange, " +
                     "KeyPairs.PublicKey, KeyPairs.PrivateKey from UserInfo join KeyPairs on UserInfo.UserId = KeyPairs.UserId";
                 SqlCommand command = new SqlCommand(sql, connection);
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     int userId = Convert.ToInt32(reader[0]);
-                    string login = reader[1].ToString();
+                    string username = reader[1].ToString();
                     string password = reader[2].ToString();
                     string exchange = reader[3].ToString();
                     string publicKey = reader[4].ToString();
                     string privateKey = reader[5].ToString();
 
-                    user = new ExchangeUser(userId, login, password, exchange, publicKey, privateKey);
+                    user = new ExchangeUser(userId, username, password, exchange, publicKey, privateKey);
                     appUsers.Add(user);
                 };
                 reader.Close();
@@ -50,7 +50,7 @@ namespace ShababTrade.Data
             return appUsers;
         } 
 
-        public static List<ExchangeUser> GetExchangeUsersByLoginAndPawwsord(string login, string password)
+        public static List<ExchangeUser> GetExchangeUsersByUsernameAndPawwsord(string username, string password)
         {
             List<ExchangeUser> appUsers = new List<ExchangeUser>();
             ExchangeUser user;
@@ -60,24 +60,24 @@ namespace ShababTrade.Data
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string sql = $"SELECT UserInfo.UserId, UserInfo.Login, UserInfo.Password, KeyPairs.Exchange, " +
+                string sql = $"SELECT UserInfo.UserId, UserInfo.Username, UserInfo.Password, KeyPairs.Exchange, " +
                              $"KeyPairs.PublicKey, KeyPairs.PrivateKey " +
                              $"FROM UserInfo " +
                              $"JOIN KeyPairs on UserInfo.UserId = KeyPairs.UserId " +
-                             $"WHERE Login = '{login}' AND Password = '{password}'";
+                             $"WHERE Username = '{username}' AND Password = '{password}'";
 
                 SqlCommand command = new SqlCommand(sql, connection);
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     int userId = Convert.ToInt32(reader[0]);
-                    string loginFromDB = reader[1].ToString();
+                    string usernameFromDB = reader[1].ToString();
                     string passwordFromDB = reader[2].ToString();
                     string exchange = reader[3].ToString();
                     string publicKey = reader[4].ToString();
                     string privateKey = reader[5].ToString();
 
-                    user = new ExchangeUser(userId, login, password, exchange, publicKey, privateKey);
+                    user = new ExchangeUser(userId, username, password, exchange, publicKey, privateKey);
                     appUsers.Add(user);
                 };
                 reader.Close();
@@ -96,7 +96,7 @@ namespace ShababTrade.Data
             {
                 connection.Open();
 
-                var isUserRegistered = TryGetUserInfoByLogin(username);
+                var isUserRegistered = TryGetUserInfoByUsername(username);
 
                 if (!isUserRegistered)
                 {
@@ -115,17 +115,17 @@ namespace ShababTrade.Data
             }
         }
 
-        public static bool TryGetExchangeUserByLogin(string username)
+        public static bool TryGetExchangeUserByUsername(string username)
         {
             List<ExchangeUser> exchangeUsers = new List<ExchangeUser>();
-            exchangeUsers = GetExchangeUsersByLogin(username);
+            exchangeUsers = GetExchangeUsersByUsername(username);
             if (exchangeUsers.Count > 0)
                 return true;
 
             return false;
         } 
 
-        public static UserInfo GetUserInfoByLogin(string username)
+        public static UserInfo GetUserInfoByUsername(string username)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
             UserInfo userInfo;
@@ -134,9 +134,9 @@ namespace ShababTrade.Data
             {
                 connection.Open();
 
-                var sql = $"SELECT UserInfo.UserId, Login, Password " +
+                var sql = $"SELECT UserInfo.UserId, Username, Password " +
                           $"FROM UserInfo " +
-                          $"WHERE Login = '{username}'";
+                          $"WHERE Username = '{username}'";
 
                 SqlCommand command = new SqlCommand(sql, connection);
 
@@ -146,10 +146,10 @@ namespace ShababTrade.Data
                     {
                         reader.Read();
                         var userId = (int)reader[0];
-                        var login = (string)reader[1];
+                        var usernameFromDb = (string)reader[1];
                         var password = (string)reader[2];
 
-                        userInfo = new UserInfo(userId, login, password);
+                        userInfo = new UserInfo(userId, usernameFromDb, password);
                     }
                 }
                 catch (Exception ex)
@@ -165,9 +165,9 @@ namespace ShababTrade.Data
             return userInfo;
         } 
 
-        public static bool TryGetUserInfoByLogin(string username)
+        public static bool TryGetUserInfoByUsername(string username)
         {
-            UserInfo userInfo = GetUserInfoByLogin(username);
+            UserInfo userInfo = GetUserInfoByUsername(username);
             if (userInfo == null)
                 return false;
 
@@ -183,7 +183,7 @@ namespace ShababTrade.Data
             {
                 connection.Open();
 
-                sql = $"Insert into UserInfo(Login, Password) " +
+                sql = $"Insert into UserInfo(Username, Password) " +
                        $"Values ('{username}', '{password}')";
 
                 SqlCommand command = new SqlCommand(sql, connection);
@@ -224,7 +224,7 @@ namespace ShababTrade.Data
             }
         } 
 
-        private static List<ExchangeUser> GetExchangeUsersByLogin(string username)
+        private static List<ExchangeUser> GetExchangeUsersByUsername(string username)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
             List<ExchangeUser> exchangeUsers = new List<ExchangeUser>();
@@ -233,10 +233,10 @@ namespace ShababTrade.Data
             {
                 connection.Open();
 
-                var sql = $"SELECT UserInfo.UserId, Login, Password, Exchange, PublicKey, PrivateKey " +
+                var sql = $"SELECT UserInfo.UserId, Username, Password, Exchange, PublicKey, PrivateKey " +
                           $"FROM UserInfo " +
                           $"JOIN KeyPairs on KeyPairs.UserId = UserInfo.UserId " +
-                          $"WHERE Login = '{username}'";
+                          $"WHERE Username = '{username}'";
 
                 try
                 {
@@ -246,13 +246,13 @@ namespace ShababTrade.Data
                         while (reader.Read())
                         {
                             var userId = (int)reader[0];
-                            var login = (string)reader[1];
+                            var usernameFromDb = (string)reader[1];
                             var password = (string)reader[2];
                             var exchange = (string)reader[3];
                             var publicKey = (string)reader[4];
                             var privateKey = (string)reader[5];
 
-                            var exchangeUser = new ExchangeUser(userId, login, password, exchange, publicKey, privateKey);
+                            var exchangeUser = new ExchangeUser(userId, usernameFromDb, password, exchange, publicKey, privateKey);
                             exchangeUsers.Add(exchangeUser);
                         }
                     }
@@ -282,7 +282,7 @@ namespace ShababTrade.Data
                 return false;
             }
 
-            UserInfo userInfo = GetUserInfoByLogin(username);
+            UserInfo userInfo = GetUserInfoByUsername(username);
 
             try
             {
@@ -304,7 +304,7 @@ namespace ShababTrade.Data
 
             try
             {
-                exchangeUsers = GetExchangeUsersByLogin(username);
+                exchangeUsers = GetExchangeUsersByUsername(username);
             }
             catch (Exception ex)
             {
@@ -319,7 +319,7 @@ namespace ShababTrade.Data
             {
                 foreach (var user in currentExchangeUser)
                 {
-                    if (user.Login == username && user.PublicKey == publicKey && user.PrivateKey == privateKey)
+                    if (user.Username == username && user.PublicKey == publicKey && user.PrivateKey == privateKey)
                     {
                         resultMessage = $"Error. User {username} already has this pair of keys";
                         return false;
@@ -340,10 +340,10 @@ namespace ShababTrade.Data
             }
         }
 
-        public ExchangeUser(int userId, string login, string password, string exchange, string publicKey, string privateKey)
+        public ExchangeUser(int userId, string username, string password, string exchange, string publicKey, string privateKey)
         {
             UserId = userId;
-            Login = login;
+            Username = username;
             Password = password;
             Exchange = exchange;
             PublicKey = publicKey;
