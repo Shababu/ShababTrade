@@ -237,7 +237,7 @@ namespace ShababTrade.ViewModels
 
         #region Username
 
-        private string _username = String.Empty;
+        private string _username = "Shabab";/*String.Empty;*/
 
         public string Username
         {
@@ -249,7 +249,7 @@ namespace ShababTrade.ViewModels
 
         #region Password
 
-        private string _password = String.Empty;
+        private string _password = "123456"; /*String.Empty;*/
         public string Password
         {
             get => _password;

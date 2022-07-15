@@ -24,35 +24,14 @@ namespace ShababTrade.ViewModels
     {
         #region Properties
 
-        #region Balances
+        #region Exchange Users
 
-        private ObservableCollection<ICryptoBalance> _balances = new ObservableCollection<ICryptoBalance>();
-        public ObservableCollection<ICryptoBalance> Balances
+        private List<ExchangeUser> _exchangeUsers = new List<ExchangeUser>();
+
+        public List<ExchangeUser> ExchangeUsers
         {
-            get => _balances;
-            set => Set(ref _balances, value);
-        }
-
-        #endregion
-
-        #region Deposits
-
-        private ObservableCollection<IDeposit> _deposits = new ObservableCollection<IDeposit>();
-        public ObservableCollection<IDeposit> Deposits
-        {
-            get => _deposits;
-            set => Set(ref _deposits, value);
-        }
-
-        #endregion
-
-        #region Withdrawals
-
-        private ObservableCollection<IWithdrawal> _withdrawals = new ObservableCollection<IWithdrawal>();
-        public ObservableCollection<IWithdrawal> Withdrawals
-        {
-            get => _withdrawals;
-            set => Set(ref _withdrawals, value);
+            get => _exchangeUsers;
+            set => Set(ref _exchangeUsers, value);
         }
 
         #endregion
@@ -79,17 +58,16 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Exchange Users
+        #region Balances
 
-        private List<ExchangeUser> _exchangeUsers = new List<ExchangeUser>();
-
-        public List<ExchangeUser> ExchangeUsers
+        private ObservableCollection<ICryptoBalance> _balances = new ObservableCollection<ICryptoBalance>();
+        public ObservableCollection<ICryptoBalance> Balances
         {
-            get => _exchangeUsers;
-            set => Set(ref _exchangeUsers, value);
+            get => _balances;
+            set => Set(ref _balances, value);
         }
 
-        #endregion  
+        #endregion
 
         #region Свойство ItemsSource для круговой диаграммы балансов
 
@@ -99,6 +77,28 @@ namespace ShababTrade.ViewModels
         {
             get => _balancesCollection_Chart;
             set { Set(ref _balancesCollection_Chart, value); }
+        }
+
+        #endregion
+
+        #region Deposits
+
+        private ObservableCollection<IDeposit> _deposits = new ObservableCollection<IDeposit>();
+        public ObservableCollection<IDeposit> Deposits
+        {
+            get => _deposits;
+            set => Set(ref _deposits, value);
+        }
+
+        #endregion
+
+        #region Withdrawals
+
+        private ObservableCollection<IWithdrawal> _withdrawals = new ObservableCollection<IWithdrawal>();
+        public ObservableCollection<IWithdrawal> Withdrawals
+        {
+            get => _withdrawals;
+            set => Set(ref _withdrawals, value);
         }
 
         #endregion
@@ -120,31 +120,11 @@ namespace ShababTrade.ViewModels
             switch (SelectedExchange)
             {
                 case "Binance":
-                    var binanceWalletInfo = new BinanceWalletInfo();
-                    var binanceUser = ExchangeUsers.Where(user => user.Exchange == "Binance").First();
-                    List<ICryptoBalance> binanceBalances = binanceWalletInfo.GetWalletInfo(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey));
-                    Balances = new ObservableCollection<ICryptoBalance>(binanceBalances);
-
-                    var binanceDeposits = binanceWalletInfo.GetRecentDeposits(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(5);
-                    Deposits = new ObservableCollection<IDeposit>(binanceDeposits);
-
-                    var binanceWithdrawals = binanceWalletInfo.GetRecentWithdrawals(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(10);
-                    Withdrawals = new ObservableCollection<IWithdrawal>(binanceWithdrawals);
-
+                    GetAccountDataForBinanceUser();
                     break;
 
                 case "Bitrue":
-                    var bitrueWalletInfo = new BitrueWalletInfo();
-                    var bitrueUser = ExchangeUsers.Where(user => user.Exchange == "Bitrue").First();
-                    List<ICryptoBalance> bitrueBalances = bitrueWalletInfo.GetWalletInfo(new BitrueApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey));
-                    Balances = new ObservableCollection<ICryptoBalance>(bitrueBalances);
-
-                    var bitrueDeposits = bitrueWalletInfo.GetRecentDeposits(new BinanceApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey), "XRP").Take(5);
-                    Deposits = new ObservableCollection<IDeposit>(bitrueDeposits);
-
-                    var bitrueWithdrawals = bitrueWalletInfo.GetRecentWithdrawals(new BinanceApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey), "XRP");
-                    Withdrawals = new ObservableCollection<IWithdrawal>(bitrueWithdrawals);
-
+                    GetAccountDataForBitrueUser();
                     break;
             }
 
@@ -152,7 +132,6 @@ namespace ShababTrade.ViewModels
         }
 
         #endregion
-
 
         #endregion
 
@@ -166,6 +145,42 @@ namespace ShababTrade.ViewModels
             SelectedExchange = currentExchange;
 
             OnSelectedExchangeChangedCommandExecuted(null);
+        }
+
+        #endregion
+
+        #region Get Account Data For Binance User
+
+        private void GetAccountDataForBinanceUser()
+        {
+            var binanceWalletInfo = new BinanceWalletInfo();
+            var binanceUser = ExchangeUsers.Where(user => user.Exchange == "Binance").First();
+            List<ICryptoBalance> binanceBalances = binanceWalletInfo.GetWalletInfo(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey));
+            Balances = new ObservableCollection<ICryptoBalance>(binanceBalances);
+
+            var binanceDeposits = binanceWalletInfo.GetRecentDeposits(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(5);
+            Deposits = new ObservableCollection<IDeposit>(binanceDeposits);
+
+            var binanceWithdrawals = binanceWalletInfo.GetRecentWithdrawals(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(10);
+            Withdrawals = new ObservableCollection<IWithdrawal>(binanceWithdrawals);
+        }
+
+        #endregion
+
+        #region Get Account Data For Bitrue User
+
+        private void GetAccountDataForBitrueUser()
+        {
+            var bitrueWalletInfo = new BitrueWalletInfo();
+            var bitrueUser = ExchangeUsers.Where(user => user.Exchange == "Bitrue").First();
+            List<ICryptoBalance> bitrueBalances = bitrueWalletInfo.GetWalletInfo(new BitrueApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey));
+            Balances = new ObservableCollection<ICryptoBalance>(bitrueBalances);
+
+            var bitrueDeposits = bitrueWalletInfo.GetRecentDeposits(new BinanceApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey), "XRP").Take(5);
+            Deposits = new ObservableCollection<IDeposit>(bitrueDeposits);
+
+            var bitrueWithdrawals = bitrueWalletInfo.GetRecentWithdrawals(new BinanceApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey), "XRP");
+            Withdrawals = new ObservableCollection<IWithdrawal>(bitrueWithdrawals);
         }
 
         #endregion

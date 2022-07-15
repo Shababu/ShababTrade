@@ -124,10 +124,10 @@
                                     <TextBlock Foreground="{StaticResource PrimaryColorBrush}" Text="{Binding}" Margin="-2 0 0 0"/>
                                 </DataTemplate>
                             </GridView.ColumnHeaderTemplate>
-                            <GridViewColumn  Header="Coin"  DisplayMemberBinding="{Binding Coin}"/>
-                            <GridViewColumn   Header="Amount"     DisplayMemberBinding="{Binding Amount,     StringFormat=N4}"/>
-                            <GridViewColumn   Header="Date"   DisplayMemberBinding="{Binding ApplyTime,StringFormat=dd/MM/yyyy H:mm:ss}"/>
-                            <GridViewColumn   Header="Address" Width="350"   DisplayMemberBinding="{Binding Address,    StringFormat=N4}"/>
+                            <GridViewColumn Header="Coin"    DisplayMemberBinding="{Binding Coin}"/>
+                            <GridViewColumn Header="Amount"  DisplayMemberBinding="{Binding Amount,    StringFormat=N4}"/>
+                            <GridViewColumn Header="Date"    DisplayMemberBinding="{Binding ApplyTime, StringFormat=dd/MM/yyyy H:mm:ss}"/>
+                            <GridViewColumn Header="Address" DisplayMemberBinding="{Binding Address}" Width="350"   />
                         </GridView>
                     </ListView.View>
 
@@ -137,45 +137,46 @@
 
         <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5">
             <StackPanel>
-                <TextBlock Style="{StaticResource TextBlockH2}" Foreground="{StaticResource PrimaryColorBrush}" Text="Recent Withdrawals" Margin="8 8 0 0"/>
+                <TextBlock Style="{StaticResource TextBlockH2}" Foreground="{StaticResource PrimaryColorBrush}" 
+                           Text="Recent Withdrawals" Margin="8 8 0 0"/>
 
                 <ScrollViewer Height="400" VerticalScrollBarVisibility="Auto">
-                <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Withdrawals}">
+                    <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Withdrawals}">
 
-                    <ListView.Resources>
-                        <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                            <Setter Property="HorizontalContentAlignment" Value="Left" />
-                        </Style>
-                    </ListView.Resources>
+                        <ListView.Resources>
+                            <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            </Style>
+                        </ListView.Resources>
 
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignGridViewItem}">
-                            <Setter Property="Focusable" Value="false"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignGridViewItem}">
+                                <Setter Property="Focusable" Value="false"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
 
-                    <ListView.View>
+                        <ListView.View>
 
-                        <GridView>
-                            <GridView.ColumnHeaderContainerStyle>
-                                <Style BasedOn="{StaticResource {x:Type GridViewColumnHeader}}" TargetType="{x:Type GridViewColumnHeader}">
-                                    <Setter Property="IsHitTestVisible" Value="False"/>
-                                </Style>
-                            </GridView.ColumnHeaderContainerStyle>
-                            <GridView.ColumnHeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Foreground="{StaticResource PrimaryColorBrush}" Text="{Binding}" Margin="-2 0 0 0"/>
-                                </DataTemplate>
-                            </GridView.ColumnHeaderTemplate>
-                            <GridViewColumn  Header="Coin"  DisplayMemberBinding="{Binding Coin}"/>
-                            <GridViewColumn   Header="Amount"     DisplayMemberBinding="{Binding Amount,     StringFormat=N4}"/>
-                            <GridViewColumn   Header="Date"   DisplayMemberBinding="{Binding ApplyTime,StringFormat=dd/MM/yyyy H:mm:ss}"/>
-                            <GridViewColumn   Header="Address" Width="340"   DisplayMemberBinding="{Binding Address,    StringFormat=N4}"/>
-                            <GridViewColumn   Header="TxId"    Width="490" DisplayMemberBinding="{Binding TxId }"/>
-
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                            <GridView>
+                                <GridView.ColumnHeaderContainerStyle>
+                                    <Style BasedOn="{StaticResource {x:Type GridViewColumnHeader}}" TargetType="{x:Type GridViewColumnHeader}">
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                    </Style>
+                                </GridView.ColumnHeaderContainerStyle>
+                                <GridView.ColumnHeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Foreground="{StaticResource PrimaryColorBrush}" Text="{Binding}" Margin="-2 0 0 0"/>
+                                    </DataTemplate>
+                                </GridView.ColumnHeaderTemplate>
+                                <GridViewColumn Header="Coin"    DisplayMemberBinding="{Binding Coin}"/>
+                                <GridViewColumn Header="Amount"  DisplayMemberBinding="{Binding Amount,    StringFormat=N4}"/>
+                                <GridViewColumn Header="Date"    DisplayMemberBinding="{Binding ApplyTime, StringFormat=dd/MM/yyyy H:mm:ss}"/>
+                                <GridViewColumn Header="Address" DisplayMemberBinding="{Binding Address,   StringFormat=N4}" Width="340"   />
+                                <GridViewColumn Header="TxId"    DisplayMemberBinding="{Binding TxId }" Width="490" />
+                            </GridView>
+                            
+                        </ListView.View>
+                    </ListView>
                 </ScrollViewer>
             </StackPanel>
         </Border>
