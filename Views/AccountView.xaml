@@ -7,6 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:views="clr-namespace:ShababTrade.ViewModels"
              xmlns:ie="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -20,12 +21,12 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Row="0" Grid.Column="0" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5">
+        <Border Grid.Row="0" Grid.Column="0" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="1 10 0 0">
-                    <TextBlock Style="{StaticResource TextBlockH3}" Foreground="{StaticResource PrimaryColorBrush}" Text="Exchange:" Margin="8 0 0 0"/>
+                    <TextBlock Style="{StaticResource TextBlockH2}" Foreground="{StaticResource PrimaryColorBrush}" Text="Exchange:" Margin="8 0 0 0"/>
 
-                    <ComboBox Width="100" Height="25" Margin="5 0 0 0" Padding="5 2 5 0" HorizontalContentAlignment="Left" 
+                    <ComboBox Width="100" Height="25" Margin="5 4 0 0" Padding="5 2 5 0" HorizontalContentAlignment="Left" 
                               Background="{StaticResource SecondaryColorBrush}" Foreground="{StaticResource PrimaryTextBursh}" 
                               ItemsSource="{Binding AvailableExchanges}" SelectedItem="{Binding SelectedExchange}"
                               materialDesign:ColorZoneAssist.Mode="PrimaryDark">
@@ -39,7 +40,65 @@
                     
                 </StackPanel>
 
-                <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Balances}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Balances}">
+
+                        <ListView.Resources>
+                            <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            </Style>
+                        </ListView.Resources>
+
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignGridViewItem}">
+                                <Setter Property="Focusable" Value="false"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+
+                        <ListView.View>
+                            <GridView>
+                                <GridView.ColumnHeaderContainerStyle>
+                                    <Style BasedOn="{StaticResource {x:Type GridViewColumnHeader}}" TargetType="{x:Type GridViewColumnHeader}">
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                    </Style>
+                                </GridView.ColumnHeaderContainerStyle>
+                                <GridView.ColumnHeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Foreground="{StaticResource PrimaryColorBrush}" Text="{Binding}" Margin="-2 0 0 0"/>
+                                    </DataTemplate>
+                                </GridView.ColumnHeaderTemplate>
+                                <GridViewColumn Width="100" Header="Asset"    DisplayMemberBinding="{Binding Asset}"/>
+                                <GridViewColumn Width="100" Header="Free"     DisplayMemberBinding="{Binding Free,     StringFormat=N4}"/>
+                                <GridViewColumn Width="100" Header="Locked"   DisplayMemberBinding="{Binding Locked,   StringFormat=N4}"/>
+                                <GridViewColumn Width="100" Header="Total"    DisplayMemberBinding="{Binding Total,    StringFormat=N4}"/>
+                                <GridViewColumn Width="100" Header="RubValue" DisplayMemberBinding="{Binding RubValue, StringFormat=N2}"/>
+                            </GridView>
+                        </ListView.View>
+
+                    </ListView>
+
+                    <lvc:PieChart Grid.Column="1" Series="{Binding BalancesCollection_Chart}" Foreground="Red"  InnerRadius="70" Width="200" Height="200" Margin="10 10 40 10" VerticalAlignment="Top" >
+                        <lvc:PieChart.Resources>
+                            <Style TargetType="Label">
+                                <Setter Property="Foreground" Value="Red"/>
+                            </Style>
+                        </lvc:PieChart.Resources>
+                    </lvc:PieChart>
+                </Grid>
+                
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="0" Grid.Column="1" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5">
+            <StackPanel>
+                <TextBlock Style="{StaticResource TextBlockH2}" Foreground="{StaticResource PrimaryColorBrush}" Text="Recent Deposits" Margin="8 8 0 0"/>
+
+                <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Deposits}">
 
                     <ListView.Resources>
                         <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource MaterialDesignFlatButton}">
@@ -65,16 +124,61 @@
                                     <TextBlock Foreground="{StaticResource PrimaryColorBrush}" Text="{Binding}" Margin="-2 0 0 0"/>
                                 </DataTemplate>
                             </GridView.ColumnHeaderTemplate>
-                            <GridViewColumn Width="100" Header="Asset"    DisplayMemberBinding="{Binding Asset}"/>
-                            <GridViewColumn Width="100" Header="Free"     DisplayMemberBinding="{Binding Free,     StringFormat=N4}"/>
-                            <GridViewColumn Width="100" Header="Locked"   DisplayMemberBinding="{Binding Locked,   StringFormat=N4}"/>
-                            <GridViewColumn Width="100" Header="Total"    DisplayMemberBinding="{Binding Total,    StringFormat=N4}"/>
-                            <GridViewColumn Width="100" Header="RubValue" DisplayMemberBinding="{Binding RubValue, StringFormat=N2}"/>
+                            <GridViewColumn  Header="Coin"  DisplayMemberBinding="{Binding Coin}"/>
+                            <GridViewColumn   Header="Amount"     DisplayMemberBinding="{Binding Amount,     StringFormat=N4}"/>
+                            <GridViewColumn   Header="Date"   DisplayMemberBinding="{Binding ApplyTime,StringFormat=dd/MM/yyyy H:mm:ss}"/>
+                            <GridViewColumn   Header="Address" Width="350"   DisplayMemberBinding="{Binding Address,    StringFormat=N4}"/>
                         </GridView>
                     </ListView.View>
-                    
+
                 </ListView>
             </StackPanel>
         </Border>
+
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5">
+            <StackPanel>
+                <TextBlock Style="{StaticResource TextBlockH2}" Foreground="{StaticResource PrimaryColorBrush}" Text="Recent Withdrawals" Margin="8 8 0 0"/>
+
+                <ScrollViewer Height="400" VerticalScrollBarVisibility="Auto">
+                <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Withdrawals}">
+
+                    <ListView.Resources>
+                        <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                        </Style>
+                    </ListView.Resources>
+
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignGridViewItem}">
+                            <Setter Property="Focusable" Value="false"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                    <ListView.View>
+
+                        <GridView>
+                            <GridView.ColumnHeaderContainerStyle>
+                                <Style BasedOn="{StaticResource {x:Type GridViewColumnHeader}}" TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="IsHitTestVisible" Value="False"/>
+                                </Style>
+                            </GridView.ColumnHeaderContainerStyle>
+                            <GridView.ColumnHeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Foreground="{StaticResource PrimaryColorBrush}" Text="{Binding}" Margin="-2 0 0 0"/>
+                                </DataTemplate>
+                            </GridView.ColumnHeaderTemplate>
+                            <GridViewColumn  Header="Coin"  DisplayMemberBinding="{Binding Coin}"/>
+                            <GridViewColumn   Header="Amount"     DisplayMemberBinding="{Binding Amount,     StringFormat=N4}"/>
+                            <GridViewColumn   Header="Date"   DisplayMemberBinding="{Binding ApplyTime,StringFormat=dd/MM/yyyy H:mm:ss}"/>
+                            <GridViewColumn   Header="Address" Width="340"   DisplayMemberBinding="{Binding Address,    StringFormat=N4}"/>
+                            <GridViewColumn   Header="TxId"    Width="490" DisplayMemberBinding="{Binding TxId }"/>
+
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+
     </Grid>
 </UserControl>

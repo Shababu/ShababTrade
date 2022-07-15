@@ -14,6 +14,9 @@ using ShababTrade.Commands;
 using BitrueApiLibrary;
 using ShababTrade.Data;
 using ShababTrade.Data.Models;
+using LiveCharts;
+using LiveCharts.Wpf;
+using LiveCharts.Defaults;
 
 namespace ShababTrade.ViewModels
 {
@@ -28,6 +31,28 @@ namespace ShababTrade.ViewModels
         {
             get => _balances;
             set => Set(ref _balances, value);
+        }
+
+        #endregion
+
+        #region Deposits
+
+        private ObservableCollection<IDeposit> _deposits = new ObservableCollection<IDeposit>();
+        public ObservableCollection<IDeposit> Deposits
+        {
+            get => _deposits;
+            set => Set(ref _deposits, value);
+        }
+
+        #endregion
+
+        #region Withdrawals
+
+        private ObservableCollection<IWithdrawal> _withdrawals = new ObservableCollection<IWithdrawal>();
+        public ObservableCollection<IWithdrawal> Withdrawals
+        {
+            get => _withdrawals;
+            set => Set(ref _withdrawals, value);
         }
 
         #endregion
@@ -66,6 +91,18 @@ namespace ShababTrade.ViewModels
 
         #endregion  
 
+        #region Свойство ItemsSource для круговой диаграммы балансов
+
+        private SeriesCollection _balancesCollection_Chart;
+
+        public SeriesCollection BalancesCollection_Chart
+        {
+            get => _balancesCollection_Chart;
+            set { Set(ref _balancesCollection_Chart, value); }
+        }
+
+        #endregion
+
         #endregion
 
         #region Commands
@@ -83,18 +120,35 @@ namespace ShababTrade.ViewModels
             switch (SelectedExchange)
             {
                 case "Binance":
-                    walletInfo = new BinanceWalletInfo();
+                    var binanceWalletInfo = new BinanceWalletInfo();
                     var binanceUser = ExchangeUsers.Where(user => user.Exchange == "Binance").First();
-                    List<ICryptoBalance> binanceBalances = walletInfo.GetWalletInfo(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey));
+                    List<ICryptoBalance> binanceBalances = binanceWalletInfo.GetWalletInfo(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey));
                     Balances = new ObservableCollection<ICryptoBalance>(binanceBalances);
+
+                    var binanceDeposits = binanceWalletInfo.GetRecentDeposits(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(5);
+                    Deposits = new ObservableCollection<IDeposit>(binanceDeposits);
+
+                    var binanceWithdrawals = binanceWalletInfo.GetRecentWithdrawals(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(10);
+                    Withdrawals = new ObservableCollection<IWithdrawal>(binanceWithdrawals);
+
                     break;
+
                 case "Bitrue":
-                    walletInfo = new BitrueWalletInfo();
+                    var bitrueWalletInfo = new BitrueWalletInfo();
                     var bitrueUser = ExchangeUsers.Where(user => user.Exchange == "Bitrue").First();
-                    List<ICryptoBalance> bitrueBalances = walletInfo.GetWalletInfo(new BitrueApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey));
+                    List<ICryptoBalance> bitrueBalances = bitrueWalletInfo.GetWalletInfo(new BitrueApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey));
                     Balances = new ObservableCollection<ICryptoBalance>(bitrueBalances);
+
+                    var bitrueDeposits = bitrueWalletInfo.GetRecentDeposits(new BinanceApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey), "XRP").Take(5);
+                    Deposits = new ObservableCollection<IDeposit>(bitrueDeposits);
+
+                    var bitrueWithdrawals = bitrueWalletInfo.GetRecentWithdrawals(new BinanceApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey), "XRP");
+                    Withdrawals = new ObservableCollection<IWithdrawal>(bitrueWithdrawals);
+
                     break;
             }
+
+            UpdateBalancesPieChart();
         }
 
         #endregion
@@ -109,31 +163,38 @@ namespace ShababTrade.ViewModels
         public void OpenAccountView(List<ExchangeUser> exchangeUsers)
         {
             var currentExchange = exchangeUsers[0].Exchange;
-            var publicKey = exchangeUsers[0].PublicKey;
-            var privateKey = exchangeUsers[0].PrivateKey;
             SelectedExchange = currentExchange;
 
-            IWalletInfo walletInfo;
-
-            switch (SelectedExchange)
-            {
-                case "Binance":
-                    walletInfo = new BinanceWalletInfo();
-                    Balances = new ObservableCollection<ICryptoBalance>(walletInfo.GetWalletInfo(new BinanceApiUser(publicKey, privateKey)));
-                    break;
-                case "Bitrue":
-                    walletInfo = new BitrueWalletInfo();
-                    Balances = new ObservableCollection<ICryptoBalance>(walletInfo.GetWalletInfo(new BitrueApiUser(publicKey, privateKey)));
-                    break;
-            }
+            OnSelectedExchangeChangedCommandExecuted(null);
         }
 
+        #endregion
+
+        #region Команда "Обновить круговую диаграмму"
+
+        public void UpdateBalancesPieChart()
+        {
+            BalancesCollection_Chart = new SeriesCollection();
+
+            foreach (var balance in Balances)
+            {
+                BalancesCollection_Chart.Add(
+                new PieSeries
+                {
+                    Values = new ChartValues<ObservableValue> { new ObservableValue((double)balance.RubValue) },
+                    DataLabels = false,
+                    Title = balance.Asset,
+                });
+            }
+        }
         #endregion
 
         #endregion
 
         public AccountViewModel(List<ExchangeUser> appUsers)
         {
+            SelectedExchangeChangedCommand = new RelayCommand(OnSelectedExchangeChangedCommandExecuted, CanSelectedExchangeChangedCommandExecute);
+
             ExchangeUsers = appUsers;
 
             foreach(var user in ExchangeUsers)
@@ -142,9 +203,7 @@ namespace ShababTrade.ViewModels
             }
 
             OpenAccountView(appUsers);
-
-            SelectedExchangeChangedCommand = new RelayCommand(OnSelectedExchangeChangedCommandExecuted, CanSelectedExchangeChangedCommandExecute);
+            UpdateBalancesPieChart();
         }
-
     }
 }

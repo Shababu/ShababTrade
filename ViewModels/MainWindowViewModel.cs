@@ -450,6 +450,21 @@ namespace ShababTrade.ViewModels
             }
             else
             {
+                if (RegisterPublicKey.Length != 64)
+                {
+                    RegisterUserResultForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFD20909"));
+                    RegisterUserResultText = "Public key must contain 64 characters";
+                    RegisterUserResultVisibility = Visibility.Visible;
+                    return;
+                }
+                if (RegisterPrivateKey.Length != 64)
+                {
+                    RegisterUserResultForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFD20909"));
+                    RegisterUserResultText = "Private key must contain 64 characters";
+                    RegisterUserResultVisibility = Visibility.Visible;
+                    return;
+                }
+
                 bool insertResult = ShababTradeDataAccessor.TryInsertNewUser(Username, Password, SelectedExchange, RegisterPublicKey, RegisterPrivateKey, out resultMessage);
                 if (insertResult)
                 {
