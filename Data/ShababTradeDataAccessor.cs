@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
 
 namespace ShababTrade.Data
 {
@@ -42,7 +43,7 @@ namespace ShababTrade.Data
             return appUsers;
         } 
 
-        public static List<ExchangeUser> GetExchangeUsersByUsernameAndPawwsord(string username, string password)
+        public static List<ExchangeUser> GetExchangeUsersByUsernameAndPawwsord(NetworkCredential credential)
         {
             List<ExchangeUser> appUsers = new List<ExchangeUser>();
             ExchangeUser user;
@@ -56,9 +57,10 @@ namespace ShababTrade.Data
                              $"KeyPairs.PublicKey, KeyPairs.PrivateKey " +
                              $"FROM UserInfo " +
                              $"JOIN KeyPairs on UserInfo.UserId = KeyPairs.UserId " +
-                             $"WHERE Username = '{username}' AND Password = '{password}'";
+                             $"WHERE Username = '{credential.UserName}' AND Password = '{credential.Password}'";
 
                 SqlCommand command = new SqlCommand(sql, connection);
+
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -69,7 +71,7 @@ namespace ShababTrade.Data
                     string publicKey = reader[4].ToString();
                     string privateKey = reader[5].ToString();
 
-                    user = new ExchangeUser(userId, username, password, exchange, publicKey, privateKey);
+                    user = new ExchangeUser(userId, credential, exchange, publicKey, privateKey);
                     appUsers.Add(user);
                 };
                 reader.Close();
@@ -79,7 +81,7 @@ namespace ShababTrade.Data
             return appUsers;
         } 
 
-        public static bool TryInsertNewUser(string username, string password, string exchange, string publicKey, string privateKey, out string resultMessage)
+        public static bool TryInsertNewUser(NetworkCredential credential, string exchange, string publicKey, string privateKey, out string resultMessage)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
             string sql;
@@ -88,18 +90,18 @@ namespace ShababTrade.Data
             {
                 connection.Open();
 
-                var isUserRegistered = TryGetUserInfoByUsername(username);
+                var isUserRegistered = TryGetUserInfoByUsername(credential.UserName);
 
                 if (!isUserRegistered)
                 {
-                    isUserRegistered = RegisterUser(username, password, exchange, publicKey, privateKey, connection, out resultMessage);
+                    isUserRegistered = RegisterUser(credential, exchange, publicKey, privateKey, connection, out resultMessage);
                     if (isUserRegistered) 
                     {
                         return true;
                     }
                 }
 
-                bool addKeysResult = AddApiKeysToUser(username, password, exchange, publicKey, privateKey, connection, out resultMessage);
+                bool addKeysResult = AddApiKeysToUser(credential, exchange, publicKey, privateKey, connection, out resultMessage);
 
                 connection.Close();
 
@@ -166,7 +168,7 @@ namespace ShababTrade.Data
             return true;
         } 
 
-        public static void InsertUserInfo(string username, string password)
+        public static void InsertUserInfo(NetworkCredential credential)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
             string sql;
@@ -176,7 +178,7 @@ namespace ShababTrade.Data
                 connection.Open();
 
                 sql = $"Insert into UserInfo(Username, Password) " +
-                       $"Values ('{username}', '{password}')";
+                       $"Values ('{credential.UserName}', '{credential.Password}')";
 
                 SqlCommand command = new SqlCommand(sql, connection);
 
@@ -262,11 +264,11 @@ namespace ShababTrade.Data
             return exchangeUsers;
         } 
 
-        private static bool RegisterUser(string username, string password, string exchange, string publicKey, string privateKey, SqlConnection connection, out string resultMessage)
+        private static bool RegisterUser(NetworkCredential credential, string exchange, string publicKey, string privateKey, SqlConnection connection, out string resultMessage)
         {
             try
             {
-                InsertUserInfo(username, password);
+                InsertUserInfo(credential);
             }
             catch (Exception ex)
             {
@@ -274,7 +276,7 @@ namespace ShababTrade.Data
                 return false;
             }
 
-            UserInfo userInfo = GetUserInfoByUsername(username);
+            UserInfo userInfo = GetUserInfoByUsername(credential.UserName);
 
             try
             {
@@ -286,17 +288,17 @@ namespace ShababTrade.Data
                 return false;
             }
 
-            resultMessage = $"Success. {exchange} api keys was assined to user: {username}";
+            resultMessage = $"Success. {exchange} api keys was assined to user: {credential.UserName}";
             return true;
         }
 
-        private static bool AddApiKeysToUser(string username, string password, string exchange, string publicKey, string privateKey, SqlConnection connection, out string resultMessage)
+        private static bool AddApiKeysToUser(NetworkCredential credential, string exchange, string publicKey, string privateKey, SqlConnection connection, out string resultMessage)
         {
             List<ExchangeUser> exchangeUsers;
 
             try
             {
-                exchangeUsers = GetExchangeUsersByUsername(username);
+                exchangeUsers = GetExchangeUsersByUsername(credential.UserName);
             }
             catch (Exception ex)
             {
@@ -311,9 +313,9 @@ namespace ShababTrade.Data
             {
                 foreach (var user in currentExchangeUser)
                 {
-                    if (user.Username == username && user.PublicKey == publicKey && user.PrivateKey == privateKey)
+                    if (user.Username == credential.UserName && user.PublicKey == publicKey && user.PrivateKey == privateKey)
                     {
-                        resultMessage = $"Error. User {username} already has this pair of keys";
+                        resultMessage = $"Error. User {credential.UserName} already has this pair of keys";
                         return false;
                     }
                 }
@@ -322,7 +324,7 @@ namespace ShababTrade.Data
             try
             {
                 InsertKeyPairs(exchange, publicKey, privateKey, exchangeUsers[0].UserId);
-                resultMessage = $"Success. {exchange} api keys was assined to user: {username}";
+                resultMessage = $"Success. {exchange} api keys was assined to user: {credential.UserName}";
                 return true;
             }
             catch (Exception ex)

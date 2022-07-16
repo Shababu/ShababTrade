@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace ShababTrade.Data.Models
 {
@@ -20,6 +21,16 @@ namespace ShababTrade.Data.Models
             UserId = userId;
             Username = username;
             Password = password;
+            Exchange = exchange;
+            PublicKey = publicKey;
+            PrivateKey = privateKey;
+        }
+
+        public ExchangeUser(int userId, NetworkCredential credential, string exchange, string publicKey, string privateKey)
+        {
+            UserId = userId;
+            Username = credential.UserName;
+            Password = credential.Password;
             Exchange = exchange;
             PublicKey = publicKey;
             PrivateKey = privateKey;

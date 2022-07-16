@@ -7,6 +7,8 @@ using ShababTrade.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Net;
+using System.Security;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -249,8 +251,8 @@ namespace ShababTrade.ViewModels
 
         #region Password
 
-        private string _password = "123456"; /*String.Empty;*/
-        public string Password
+        private SecureString _password = new SecureString(); 
+        public SecureString Password
         {
             get => _password;
             set => Set(ref _password, value);
@@ -381,9 +383,9 @@ namespace ShababTrade.ViewModels
         public bool CanLoginCommandExecute(object p) => true;
         public void OnLoginCommandExecuted(object p)
         {
-            if (!string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password))
+            if (!string.IsNullOrEmpty(Username) && Password.Length > 0)
             {
-                ExchangeUsers = ShababTradeDataAccessor.GetExchangeUsersByUsernameAndPawwsord(Username, Password);
+                ExchangeUsers = ShababTradeDataAccessor.GetExchangeUsersByUsernameAndPawwsord(new NetworkCredential(Username, Password));
                 if (ExchangeUsers.Count > 0)
                 {
                     List<string> avaliableExchanges = new List<string>();
@@ -442,7 +444,7 @@ namespace ShababTrade.ViewModels
         {
             string resultMessage = string.Empty;
 
-            if(string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password) ||
+            if(string.IsNullOrEmpty(Username) || Password.Length == 0 ||
                string.IsNullOrEmpty(RegisterPublicKey) || string.IsNullOrEmpty(RegisterPrivateKey))
             {
                 RegisterUserResultForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFD20909"));
@@ -465,7 +467,7 @@ namespace ShababTrade.ViewModels
                     return;
                 }
 
-                bool insertResult = ShababTradeDataAccessor.TryInsertNewUser(Username, Password, SelectedExchange, RegisterPublicKey, RegisterPrivateKey, out resultMessage);
+                bool insertResult = ShababTradeDataAccessor.TryInsertNewUser(new NetworkCredential(Username, Password), SelectedExchange, RegisterPublicKey, RegisterPrivateKey, out resultMessage);
                 if (insertResult)
                 {
                     RegisterUserResultForeground = new SolidColorBrush(Colors.Green);

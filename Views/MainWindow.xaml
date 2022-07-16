@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:ShababTrade.ViewModels"
         xmlns:views="clr-namespace:ShababTrade.Views"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:ie="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:ie="http://schemas.microsoft.com/xaml/behaviors" xmlns:customcontrols="clr-namespace:ShababTrade.CustomControls"
         mc:Ignorable="d"
         Title="Shabab Trade" Height="450" Width="800" 
         WindowState="Maximized" Background="#FF111111">
@@ -61,12 +61,11 @@
                         <TextBlock Foreground="{StaticResource SecondaryTextBursh}" Text="Username"/>
                     </materialDesign:HintAssist.Hint>
                 </TextBox>
-                <TextBox   x:Name="PasswordInput" Style="{StaticResource TextBoxH2}"   Margin="10 20 10 0" Text="{Binding Password}" 
-                           materialDesign:HintAssist.IsFloating="True">
-                    <materialDesign:HintAssist.Hint>
-                        <TextBlock Foreground="{StaticResource SecondaryTextBursh}" Text="Password"/>
-                    </materialDesign:HintAssist.Hint>
-                </TextBox>
+
+                <customcontrols:BindablePasswordBox x:Name="PasswordInput" Margin="10 20 10 0" Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    
+                </customcontrols:BindablePasswordBox>
+ 
                 <TextBlock Style="{StaticResource TextBlockH3}" Margin="0 25 0 0" Text="Incorrect username or password" TextAlignment="Center"  
                            Foreground="{StaticResource ErrorBrush}" Visibility="{Binding LoginErrorVisibility}"/>
                 <Border BorderThickness="3" CornerRadius="5" Height="265" Width="673" Margin="10 10 0 0" HorizontalAlignment="Left" 
