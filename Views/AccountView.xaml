@@ -82,13 +82,23 @@
 
                     </ListView>
 
-                    <lvc:PieChart Grid.Column="1" Series="{Binding BalancesCollection_Chart}" Foreground="Red"  InnerRadius="70" Width="200" Height="200" Margin="10 10 40 10" VerticalAlignment="Top" >
-                        <lvc:PieChart.Resources>
-                            <Style TargetType="Label">
-                                <Setter Property="Foreground" Value="Red"/>
-                            </Style>
-                        </lvc:PieChart.Resources>
-                    </lvc:PieChart>
+                    <StackPanel Grid.Column="1">
+
+                        <TextBlock HorizontalAlignment="Center" Margin="10 0 40 10" Style="{StaticResource TextBlockH2}">
+                            <Run Text="Total balance:"/>
+                            <Run Text="{Binding TotalBalance, StringFormat=N2}"/>
+                            <Run Text="Rub"/>
+                        </TextBlock>
+                    
+                        <lvc:PieChart Series="{Binding BalancesCollection_Chart}" Foreground="Red"  InnerRadius="70" Width="200" Height="200" Margin="10 0 40 10" VerticalAlignment="Top" >
+                            <lvc:PieChart.Resources>
+                                <Style TargetType="Label">
+                                    <Setter Property="Foreground" Value="Red"/>
+                                </Style>
+                            </lvc:PieChart.Resources>
+                        </lvc:PieChart>
+
+                    </StackPanel>
                 </Grid>
                 
             </StackPanel>

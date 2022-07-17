@@ -103,6 +103,18 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
+        #region Total Balance
+
+        private decimal _totalBalance;
+        public decimal TotalBalance
+        {
+            get => _totalBalance;
+            set => Set(ref _totalBalance, value);
+        }
+
+        #endregion
+        
+
         #endregion
 
         #region Commands
@@ -115,8 +127,6 @@ namespace ShababTrade.ViewModels
 
         public void OnSelectedExchangeChangedCommandExecuted(object p)
         {
-            IWalletInfo walletInfo;
-
             switch (SelectedExchange)
             {
                 case "Binance":
@@ -157,6 +167,7 @@ namespace ShababTrade.ViewModels
             var binanceUser = ExchangeUsers.Where(user => user.Exchange == "Binance").First();
             List<ICryptoBalance> binanceBalances = binanceWalletInfo.GetWalletInfo(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey));
             Balances = new ObservableCollection<ICryptoBalance>(binanceBalances);
+            TotalBalance = binanceWalletInfo.GetAccountTotalBalance(binanceBalances);
 
             var binanceDeposits = binanceWalletInfo.GetRecentDeposits(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(5);
             Deposits = new ObservableCollection<IDeposit>(binanceDeposits);
@@ -175,6 +186,7 @@ namespace ShababTrade.ViewModels
             var bitrueUser = ExchangeUsers.Where(user => user.Exchange == "Bitrue").First();
             List<ICryptoBalance> bitrueBalances = bitrueWalletInfo.GetWalletInfo(new BitrueApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey));
             Balances = new ObservableCollection<ICryptoBalance>(bitrueBalances);
+            TotalBalance = bitrueWalletInfo.GetAccountTotalBalance(bitrueBalances);
 
             var bitrueDeposits = bitrueWalletInfo.GetRecentDeposits(new BinanceApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey), "XRP").Take(5);
             Deposits = new ObservableCollection<IDeposit>(bitrueDeposits);
