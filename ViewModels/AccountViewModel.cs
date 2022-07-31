@@ -24,6 +24,10 @@ namespace ShababTrade.ViewModels
 {
     internal class AccountViewModel : BaseViewModel
     {
+        private BackgroundWorker backgroundWorker = new BackgroundWorker();
+
+
+
         #region Properties
 
         #region Exchange Users
@@ -115,6 +119,28 @@ namespace ShababTrade.ViewModels
         }
 
         #endregion
+
+        #region Account Loading Spinner Visibility
+
+        private Visibility _accountLoadingSpinnerVisibility = Visibility.Collapsed;
+        public Visibility AccountLoadingSpinnerVisibility
+        {
+            get => _accountLoadingSpinnerVisibility;
+            set => Set(ref _accountLoadingSpinnerVisibility, value);
+        }
+
+        #endregion
+
+        #region Is Exchange Selection Enabled
+
+        private bool _isExchangeSelectionEnabled = true;
+        public bool IsExchangeSelectionEnabled
+        {
+            get => _isExchangeSelectionEnabled;
+            set => Set(ref _isExchangeSelectionEnabled, value);
+        }
+
+        #endregion
         
 
         #endregion
@@ -129,21 +155,9 @@ namespace ShababTrade.ViewModels
 
         public void OnSelectedExchangeChangedCommandExecuted(object p)
         {
-            switch (SelectedExchange)
-            {
-                case "Binance":
-                    GetAccountDataForBinanceUser();
-                    break;
-
-                case "Bitrue":
-                    GetAccountDataForBitrueUser();
-                    break;
-            }
-
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                UpdateBalancesPieChart();
-            });
+            AccountLoadingSpinnerVisibility = Visibility.Visible;
+            IsExchangeSelectionEnabled = false;
+            backgroundWorker.RunWorkerAsync();
         }
 
         #endregion
@@ -159,7 +173,16 @@ namespace ShababTrade.ViewModels
             var currentExchange = exchangeUsers.Where(user => user.Exchange == SelectedExchange).First();
             SelectedExchange = currentExchange.Exchange;
 
-            OnSelectedExchangeChangedCommandExecuted(null);
+            switch (SelectedExchange)
+            {
+                case "Binance":
+                    GetAccountDataForBinanceUser();
+                    break;
+
+                case "Bitrue":
+                    GetAccountDataForBitrueUser();
+                    break;
+            }
         }
 
         #endregion
@@ -171,14 +194,19 @@ namespace ShababTrade.ViewModels
             var binanceWalletInfo = new BinanceWalletInfo();
             var binanceUser = ExchangeUsers.Where(user => user.Exchange == "Binance").First();
             List<ICryptoBalance> binanceBalances = binanceWalletInfo.GetWalletInfo(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey));
-            Balances = new ObservableCollection<ICryptoBalance>(binanceBalances);
-            TotalBalance = binanceWalletInfo.GetAccountTotalBalance(binanceBalances);
+            var balances = new ObservableCollection<ICryptoBalance>(binanceBalances);
+            var totalBalance = binanceWalletInfo.GetAccountTotalBalance(binanceBalances);
 
             var binanceDeposits = binanceWalletInfo.GetRecentDeposits(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(5);
-            Deposits = new ObservableCollection<IDeposit>(binanceDeposits);
+            var deposits = new ObservableCollection<IDeposit>(binanceDeposits);
 
             var binanceWithdrawals = binanceWalletInfo.GetRecentWithdrawals(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(10);
-            Withdrawals = new ObservableCollection<IWithdrawal>(binanceWithdrawals);
+            var withdrawals = new ObservableCollection<IWithdrawal>(binanceWithdrawals);
+
+            Balances = balances;
+            TotalBalance = totalBalance;
+            Deposits = deposits;
+            Withdrawals = withdrawals;
 
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -195,14 +223,19 @@ namespace ShababTrade.ViewModels
             var bitrueWalletInfo = new BitrueWalletInfo();
             var bitrueUser = ExchangeUsers.Where(user => user.Exchange == "Bitrue").First();
             List<ICryptoBalance> bitrueBalances = bitrueWalletInfo.GetWalletInfo(new BitrueApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey));
-            Balances = new ObservableCollection<ICryptoBalance>(bitrueBalances);
-            TotalBalance = bitrueWalletInfo.GetAccountTotalBalance(bitrueBalances);
+            var balances = new ObservableCollection<ICryptoBalance>(bitrueBalances);
+            var totalBalance = bitrueWalletInfo.GetAccountTotalBalance(bitrueBalances);
 
             var bitrueDeposits = bitrueWalletInfo.GetRecentDeposits(new BinanceApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey), "XRP").Take(5);
-            Deposits = new ObservableCollection<IDeposit>(bitrueDeposits);
+            var deposits = new ObservableCollection<IDeposit>(bitrueDeposits);
 
             var bitrueWithdrawals = bitrueWalletInfo.GetRecentWithdrawals(new BinanceApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey), "XRP");
-            Withdrawals = new ObservableCollection<IWithdrawal>(bitrueWithdrawals);
+            var withdrawals = new ObservableCollection<IWithdrawal>(bitrueWithdrawals);
+
+            Balances = balances;
+            TotalBalance = totalBalance;
+            Deposits = deposits;
+            Withdrawals = withdrawals;
         }
 
         #endregion
@@ -241,6 +274,35 @@ namespace ShababTrade.ViewModels
             }
 
             OpenAccountView(appUsers);
+
+            backgroundWorker.DoWork += UpdateAccountView;
+            backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted; ;
+        }
+
+        private void BackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            AccountLoadingSpinnerVisibility = Visibility.Collapsed;
+            IsExchangeSelectionEnabled = true;
+        }
+
+        private void UpdateAccountView(object? sender, DoWorkEventArgs e)
+        {
+
+            switch (SelectedExchange)
+            {
+                case "Binance":
+                    GetAccountDataForBinanceUser();
+                    break;
+
+                case "Bitrue":
+                    GetAccountDataForBitrueUser();
+                    break;
+            }
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                UpdateBalancesPieChart();
+            });
         }
     }
 }

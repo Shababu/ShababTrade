@@ -23,8 +23,6 @@ namespace ShababTrade.ViewModels
     {
         private BackgroundWorker backgroundWorker = new BackgroundWorker();
 
-
-
         #region Properties
 
         #region Login View Visibility
@@ -239,8 +237,7 @@ namespace ShababTrade.ViewModels
             set => Set(ref _loginButtonVisibility, value);
         }
 
-        #endregion 
-        
+        #endregion         
 
         #region Is Sign Up Button Clicked
 
@@ -399,12 +396,7 @@ namespace ShababTrade.ViewModels
             }
         }
 
-        private void SetMainTabsBackgroundToDefault()
-        {
-            var defaultColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2D2D2D"));
-            AccountTabBackground = TradeHistoryTabBackground = SpotTabBackground =
-                AutoTradingTabBackground = FuturesTabBackground = defaultColor;
-        }
+        
 
         #endregion
 
@@ -493,7 +485,6 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-
         #endregion
 
         #region Methods
@@ -549,6 +540,16 @@ namespace ShababTrade.ViewModels
         {
             LoginSpinnerVisibility = Visibility.Visible;
             LoginButtonVisibility = Visibility.Collapsed;
+        }
+
+        #endregion
+
+        #region SetMainTabsBackgroundToDefault
+        private void SetMainTabsBackgroundToDefault()
+        {
+            var defaultColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2D2D2D"));
+            AccountTabBackground = TradeHistoryTabBackground = SpotTabBackground =
+                AutoTradingTabBackground = FuturesTabBackground = defaultColor;
         }
 
         #endregion

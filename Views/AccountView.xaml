@@ -7,9 +7,9 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:views="clr-namespace:ShababTrade.ViewModels"
              xmlns:ie="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" xmlns:fa5="http://schemas.fontawesome.com/icons/"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="1300">
 
     <UserControl.Resources>
         <Style TargetType="TextBlock">
@@ -35,7 +35,7 @@
                     <ComboBox Width="100" Height="25" Margin="5 4 0 0" Padding="5 2 5 0" HorizontalContentAlignment="Left" 
                               Background="{StaticResource SecondaryColorBrush}" Foreground="{StaticResource PrimaryTextBursh}" 
                               ItemsSource="{Binding AvailableExchanges}" SelectedItem="{Binding SelectedExchange}"
-                              materialDesign:ColorZoneAssist.Mode="PrimaryDark">
+                              IsEnabled="{Binding IsExchangeSelectionEnabled}" materialDesign:ColorZoneAssist.Mode="PrimaryDark">
                         <ie:Interaction.Triggers>
                             <ie:EventTrigger EventName="SelectionChanged">
                                 <ie:InvokeCommandAction Command="{Binding SelectedExchangeChangedCommand}"  
@@ -43,7 +43,9 @@
                             </ie:EventTrigger>
                         </ie:Interaction.Triggers>
                     </ComboBox>
-                    
+
+                    <fa5:SvgAwesome x:Name="loginSpinnerIcon" Visibility="{Binding AccountLoadingSpinnerVisibility}" Icon="Solid_Spinner" Spin="True" Height="20" Width="20" Margin="10 0 0 0" Foreground="White"/>
+
                 </StackPanel>
 
                 <Grid>
