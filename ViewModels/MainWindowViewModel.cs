@@ -7,6 +7,7 @@ using ShababTrade.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Net;
 using System.Security;
 using System.Threading.Tasks;
@@ -20,6 +21,9 @@ namespace ShababTrade.ViewModels
 {
     internal class MainWindowViewModel : BaseViewModel
     {
+        private BackgroundWorker backgroundWorker = new BackgroundWorker();
+
+
 
         #region Properties
 
@@ -213,6 +217,31 @@ namespace ShababTrade.ViewModels
 
         #endregion 
 
+        #region Login Spinner Visibility
+
+        private Visibility _loginSpinnerVisibility = Visibility.Collapsed;
+
+        public Visibility LoginSpinnerVisibility
+        {
+            get => _loginSpinnerVisibility;
+            set => Set(ref _loginSpinnerVisibility, value);
+        }
+
+        #endregion 
+
+        #region Login Button Visibility
+
+        private Visibility _loginButtonVisibility = Visibility.Visible;
+
+        public Visibility LoginButtonVisibility
+        {
+            get => _loginButtonVisibility;
+            set => Set(ref _loginButtonVisibility, value);
+        }
+
+        #endregion 
+        
+
         #region Is Sign Up Button Clicked
 
         private bool _isSignUpButtonClicked = false;
@@ -239,7 +268,7 @@ namespace ShababTrade.ViewModels
 
         #region Username
 
-        private string _username = "Shabab";/*String.Empty;*/
+        private string _username = "Shabab";
 
         public string Username
         {
@@ -352,9 +381,11 @@ namespace ShababTrade.ViewModels
             {
                 case "Account":
                     AccountTabBackground = activeTabColor;
+                    CurrentViewModel = new AccountViewModel(ExchangeUsers, SelectedExchange);
                     break;
                 case "History":
                     TradeHistoryTabBackground = activeTabColor;
+                    CurrentViewModel = new TradeHistoryViewModel(ExchangeUsers, SelectedExchange);
                     break;
                 case "Spot":
                     SpotTabBackground = activeTabColor;
@@ -383,31 +414,10 @@ namespace ShababTrade.ViewModels
         public bool CanLoginCommandExecute(object p) => true;
         public void OnLoginCommandExecuted(object p)
         {
-            if (!string.IsNullOrEmpty(Username) && Password.Length > 0)
-            {
-                ExchangeUsers = ShababTradeDataAccessor.GetExchangeUsersByUsernameAndPawwsord(new NetworkCredential(Username, Password));
-                if (ExchangeUsers.Count > 0)
-                {
-                    List<string> avaliableExchanges = new List<string>();
-                    foreach(var user in ExchangeUsers)
-                    {
-                        avaliableExchanges.Add(user.Exchange);
-                    }
-                    CurrentViewModel = new AccountViewModel(ExchangeUsers);
-                    LoginViewVisibility = Visibility.Collapsed;
-                    MainMenuVisibility = Visibility.Visible;                    
-                }
+            ShowLoadingSpinner();
+            LoginErrorVisibility = Visibility.Hidden;
 
-                else
-                {
-                    LoginErrorVisibility = Visibility.Visible;
-                }
-            }
-
-            else
-            {
-                LoginErrorVisibility = Visibility.Visible;
-            }
+            backgroundWorker.RunWorkerAsync();
         }
 
         #endregion
@@ -482,7 +492,66 @@ namespace ShababTrade.ViewModels
         }
 
         #endregion
-        
+
+
+        #endregion
+
+        #region Methods
+
+        #region Login
+
+        public void Login(object? sender, DoWorkEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Username) && Password.Length > 0)
+            {
+                ExchangeUsers = ShababTradeDataAccessor.GetExchangeUsersByUsernameAndPawwsord(new NetworkCredential(Username, Password));
+                if (ExchangeUsers.Count > 0)
+                {
+                    List<string> avaliableExchanges = new List<string>();
+                    foreach (var user in ExchangeUsers)
+                    {
+                        avaliableExchanges.Add(user.Exchange);
+                    }
+                    CurrentViewModel = new AccountViewModel(ExchangeUsers, SelectedExchange);
+                    LoginViewVisibility = Visibility.Collapsed;
+                    MainMenuVisibility = Visibility.Visible;
+                }
+
+                else
+                {
+                    LoginErrorVisibility = Visibility.Visible;
+                    ShowLoginButton();
+                }
+            }
+
+            else
+            {
+                LoginErrorVisibility = Visibility.Visible;
+                ShowLoginButton();
+            }
+        }
+
+        #endregion
+
+        #region Show Login Button
+
+        private void ShowLoginButton()
+        {
+            LoginSpinnerVisibility = Visibility.Collapsed;
+            LoginButtonVisibility = Visibility.Visible;
+        }
+
+        #endregion
+
+        #region Show Loading Spinner
+
+        private void ShowLoadingSpinner()
+        {
+            LoginSpinnerVisibility = Visibility.Visible;
+            LoginButtonVisibility = Visibility.Collapsed;
+        }
+
+        #endregion
 
         #endregion
 
@@ -492,6 +561,8 @@ namespace ShababTrade.ViewModels
             LoginCommand = new RelayCommand(OnLoginCommandExecuted, CanLoginCommandExecute);
             OpenSignUpViewCommand = new RelayCommand(OnOpenSignUpViewCommandExecuted, CanOpenSignUpViewCommandExecute);
             SelectMainMenuTabCommand = new RelayCommand(OnSelectMainMenuTabCommandExecuted, CanSelectMainMenuTabCommandExecute);
+
+            backgroundWorker.DoWork += Login;
         }
     }
 }

@@ -8,12 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BinanceAPI" Version="1.0.6" />
     <PackageReference Include="BitrueAPI" Version="1.0.4" />
+    <PackageReference Include="FontAwesome5" Version="2.1.11" />
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
     <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />

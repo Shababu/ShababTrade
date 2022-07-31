@@ -17,6 +17,8 @@ using ShababTrade.Data.Models;
 using LiveCharts;
 using LiveCharts.Wpf;
 using LiveCharts.Defaults;
+using System.ComponentModel;
+using System.Windows;
 
 namespace ShababTrade.ViewModels
 {
@@ -138,7 +140,10 @@ namespace ShababTrade.ViewModels
                     break;
             }
 
-            UpdateBalancesPieChart();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                UpdateBalancesPieChart();
+            });
         }
 
         #endregion
@@ -151,8 +156,8 @@ namespace ShababTrade.ViewModels
 
         public void OpenAccountView(List<ExchangeUser> exchangeUsers)
         {
-            var currentExchange = exchangeUsers[0].Exchange;
-            SelectedExchange = currentExchange;
+            var currentExchange = exchangeUsers.Where(user => user.Exchange == SelectedExchange).First();
+            SelectedExchange = currentExchange.Exchange;
 
             OnSelectedExchangeChangedCommandExecuted(null);
         }
@@ -174,6 +179,11 @@ namespace ShababTrade.ViewModels
 
             var binanceWithdrawals = binanceWalletInfo.GetRecentWithdrawals(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(10);
             Withdrawals = new ObservableCollection<IWithdrawal>(binanceWithdrawals);
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                UpdateBalancesPieChart();
+            });
         }
 
         #endregion
@@ -197,7 +207,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Команда "Обновить круговую диаграмму"
+        #region Update PieChart
 
         public void UpdateBalancesPieChart()
         {
@@ -218,8 +228,9 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        public AccountViewModel(List<ExchangeUser> appUsers)
+        public AccountViewModel(List<ExchangeUser> appUsers, string selectedExchange)
         {
+            SelectedExchange = selectedExchange;
             SelectedExchangeChangedCommand = new RelayCommand(OnSelectedExchangeChangedCommandExecuted, CanSelectedExchangeChangedCommandExecute);
 
             ExchangeUsers = appUsers;
@@ -230,7 +241,6 @@ namespace ShababTrade.ViewModels
             }
 
             OpenAccountView(appUsers);
-            UpdateBalancesPieChart();
         }
     }
 }

@@ -22,6 +22,10 @@
                 <views:AccountView/>
             </DataTemplate>
 
+            <DataTemplate DataType="{x:Type viewModels:TradeHistoryViewModel}">
+                <views:TradeHistoryView/>
+            </DataTemplate>
+
             <SolidColorBrush Color="#D81D3C" x:Key="PrimaryColorBrush"/>
             <SolidColorBrush Color="#2D2D2D" x:Key="SecondaryColorBrush"/>
             <SolidColorBrush Color="White" x:Key="PrimaryTextBursh"/>
@@ -31,10 +35,6 @@
             <SolidColorBrush Color="#FF6ADF0C" x:Key="SuccessBrush"/>
             <SolidColorBrush Color="DodgerBlue" x:Key="HyperlinkColorBrush"/>
 
-            <Style TargetType="TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBursh}"/>
-            </Style>
-            
         </ResourceDictionary>
         
     </Application.Resources>

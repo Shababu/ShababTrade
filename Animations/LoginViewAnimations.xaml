@@ -30,4 +30,5 @@
         <ThicknessAnimation Storyboard.TargetName="PasswordInput" Storyboard.TargetProperty="Margin" 
                             To="10 20 10 0" Duration="0:0:0.4"/>
     </Storyboard>
+
 </ResourceDictionary>

@@ -7,7 +7,9 @@
         xmlns:vm="clr-namespace:ShababTrade.ViewModels"
         xmlns:views="clr-namespace:ShababTrade.Views"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:ie="http://schemas.microsoft.com/xaml/behaviors" xmlns:customcontrols="clr-namespace:ShababTrade.CustomControls"
+        xmlns:ie="http://schemas.microsoft.com/xaml/behaviors" 
+        xmlns:customcontrols="clr-namespace:ShababTrade.CustomControls"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
         mc:Ignorable="d"
         Title="Shabab Trade" Height="450" Width="800" 
         WindowState="Maximized" Background="#FF111111">
@@ -31,11 +33,11 @@
         
         <Border Grid.Row="0" Grid.Column="0" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5"  Visibility="{Binding MainMenuVisibility}">
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Button Style="{StaticResource MainTabStyle}" Background="{Binding AccountTabBackground}"      Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Account" Content="Account" Cursor="Hand"/>
-                <Button Style="{StaticResource MainTabStyle}" Background="{Binding TradeHistoryTabBackground}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="History" Content="Trade History"/>
-                <Button Style="{StaticResource MainTabStyle}" Background="{Binding SpotTabBackground}"         Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Spot"    Content="Spot"/>
-                <Button Style="{StaticResource MainTabStyle}" Background="{Binding AutoTradingTabBackground}"  Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Auto"    Content="Auto Trading"/>
-                <Button Style="{StaticResource MainTabStyle}" Background="{Binding FuturesTabBackground}"      Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Futures" Content="Futures"/>
+                <Button Style="{StaticResource MainTabStyle}" Background="{Binding AccountTabBackground}"      Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Account" Content="Account" Cursor="Hand"/>
+                <Button Style="{StaticResource MainTabStyle}" Background="{Binding TradeHistoryTabBackground}" Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="History" Content="Trade History" Cursor="Hand"/>
+                <Button Style="{StaticResource MainTabStyle}" Background="{Binding SpotTabBackground}"         Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Spot"    Content="Spot"/>
+                <Button Style="{StaticResource MainTabStyle}" Background="{Binding AutoTradingTabBackground}"  Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Auto"    Content="Auto Trading"/>
+                <Button Style="{StaticResource MainTabStyle}" Background="{Binding FuturesTabBackground}"      Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Futures" Content="Futures" Cursor="Hand"/>
             </StackPanel>
         </Border>
 
@@ -108,9 +110,14 @@
                            Foreground="{Binding RegisterUserResultForeground}" Visibility="{Binding RegisterUserResultVisibility}"/>
                     </StackPanel>
                 </Border>
-                
+
                 <Button    Style="{StaticResource LoginButtonStyle}" Margin="10 20 10 0" FontSize="20" Content="Login" Height="40" 
-                           Background="{StaticResource SecondaryColorBrush}" Command="{Binding LoginCommand}" Cursor="Hand"/>
+                           Background="{StaticResource SecondaryColorBrush}" Command="{Binding LoginCommand}" Cursor="Hand"
+                           Visibility="{Binding LoginButtonVisibility}"/>
+                <Border    Margin="10 20 10 0" Height="40" Visibility="{Binding LoginSpinnerVisibility}" CornerRadius="3"
+                           Background="{StaticResource SecondaryColorBrush}">
+                    <fa5:SvgAwesome x:Name="loginSpinnerIcon" Icon="Solid_Spinner" Spin="True" Height="20" Width="20" Foreground="White"/>
+                </Border>
                 <TextBlock Margin="0 20 0 0" FontSize="16" TextAlignment="Center" Visibility="{Binding SignupHyperlinkVisibility}">
                     <Run       Foreground="{StaticResource SecondaryTextBursh}" Text="Not a member?"/>
                     <Hyperlink Foreground="{StaticResource HyperlinkColorBrush}" Command="{Binding OpenSignUpViewCommand}">Sign in</Hyperlink>
