@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ShababTrade.Views" xmlns:behaviours="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:ie="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:ie="http://schemas.microsoft.com/xaml/behaviors" xmlns:fa5="http://schemas.fontawesome.com/icons/"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1400">
     <Grid>
@@ -94,7 +94,7 @@
                         <ComboBox Width="100" Height="25" Margin="3 0 0 0" Padding="3 3 3 0" HorizontalContentAlignment="Left" VerticalAlignment="Top"
                               Background="{StaticResource SecondaryColorBrush}" Foreground="{StaticResource PrimaryTextBursh}" 
                               ItemsSource="{Binding AvailableExchanges}" SelectedItem="{Binding SelectedExchange}"
-                              materialDesign:ColorZoneAssist.Mode="PrimaryDark">
+                              IsEnabled="{Binding IsExchangeSelectionEnabled}" materialDesign:ColorZoneAssist.Mode="PrimaryDark">
                             <ie:Interaction.Triggers>
                                 <ie:EventTrigger EventName="SelectionChanged">
                                     <ie:InvokeCommandAction Command="{Binding SelectedExchangeChangedCommand}"  
@@ -108,11 +108,11 @@
 
                     <TextBlock Style="{StaticResource TextBlockH3}" Text="Date:" Margin="10 0" Foreground="{StaticResource PrimaryTextBursh}" VerticalAlignment="Top"/>
                     <Border Background="White" Height="25"  Width="85" VerticalAlignment="Top" CornerRadius="2">
-                        <DatePicker Style="{StaticResource MaterialDesignDatePicker}" Width="85" Foreground="{StaticResource SecondaryTextBursh}" VerticalAlignment="Top" Margin="0" SelectedDate="{Binding StartDate}"/>
+                        <DatePicker Style="{StaticResource MaterialDesignDatePicker}" IsEnabled="{Binding IsExchangeSelectionEnabled}" Width="85" Foreground="{StaticResource SecondaryTextBursh}" VerticalAlignment="Top" Margin="0" SelectedDate="{Binding StartDate}"/>
                     </Border>
                     <TextBlock Style="{StaticResource TextBlockH3}" Foreground="{StaticResource PrimaryTextBursh}" VerticalAlignment="Top" Text="-" Margin="10 0 0 0"/>
                     <Border Background="White" Height="25"  Width="85" VerticalAlignment="Top" CornerRadius="2" Margin="10 0 0 0">
-                        <DatePicker Style="{StaticResource MaterialDesignDatePicker}" Width="85" Foreground="{StaticResource SecondaryTextBursh}" VerticalAlignment="Top" Margin="0" SelectedDate="{Binding EndDate}">
+                        <DatePicker Style="{StaticResource MaterialDesignDatePicker}" IsEnabled="{Binding IsExchangeSelectionEnabled}" Width="85" Foreground="{StaticResource SecondaryTextBursh}" VerticalAlignment="Top" Margin="0" SelectedDate="{Binding EndDate}">
                             <behaviours:Interaction.Triggers>
                                 <behaviours:EventTrigger EventName="SelectedDateChanged">
                                     <behaviours:InvokeCommandAction Command="{Binding EndDateSelected_Command}"/>
@@ -132,7 +132,7 @@
                         </StackPanel.Resources>
                     
                         <Border CornerRadius="2" BorderThickness="1" BorderBrush="{StaticResource SecondaryColorBrush}" Height="24" Background="White">
-                            <Button Height="22" Command="{Binding OpenBaseAssetsList_Command}"   >
+                            <Button Height="22" IsEnabled="{Binding IsExchangeSelectionEnabled}" Command="{Binding OpenBaseAssetsList_Command}"   >
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                        <ColumnDefinition Width="100"/>
@@ -151,7 +151,7 @@
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBox BorderThickness="0" BorderBrush="Transparent" Margin="2" FontSize="14" Padding="0 2 0 0" FontFamily="Microsoft Sans Serif" Text="{Binding TxtSearchSymbol, Mode=TwoWay}">
+                                    <TextBox IsEnabled="{Binding IsExchangeSelectionEnabled}" BorderThickness="0" BorderBrush="Transparent" Margin="2" FontSize="14" Padding="0 2 0 0" FontFamily="Microsoft Sans Serif" Text="{Binding TxtSearchSymbol, Mode=TwoWay}">
                                         <behaviours:Interaction.Triggers>
                                             <behaviours:EventTrigger EventName="TextChanged">
                                                 <behaviours:InvokeCommandAction Command="{Binding SearchAsset_Command}"/>
@@ -159,14 +159,14 @@
                                         </behaviours:Interaction.Triggers>
                                     </TextBox>
                                     <Border Grid.Column="1"  BorderThickness="1" CornerRadius="5" BorderBrush="Transparent" Background="{StaticResource SecondaryColorBrush}">
-                                        <Button Style="{StaticResource MaterialDesignFlatAccentBgButton}" Content="Search" Background="Transparent" FontSize="10" Padding="0" Margin="0" VerticalAlignment="Center" BorderThickness="0" Foreground="White" Command="{Binding SearchAsset_Command}"/>
+                                        <Button IsEnabled="{Binding IsExchangeSelectionEnabled}" Style="{StaticResource MaterialDesignFlatAccentBgButton}" Content="Search" Background="Transparent" FontSize="10" Padding="0" Margin="0" VerticalAlignment="Center" BorderThickness="0" Foreground="White" Command="{Binding SearchAsset_Command}"/>
                                     </Border>
                                 </Grid>
                             </Border>
                         </Border>
                         
                         <Border BorderThickness="2 0 2 2" CornerRadius="0 0 5 5" BorderBrush="{StaticResource PrimaryTextBursh}" Background="{StaticResource SecondaryColorBrush}" Visibility="{Binding BaseAssetsVisibility}">
-                            <ListBox ItemsSource="{Binding BaseAssets}" Height="150" SelectedItem="{Binding BaseAssetSelected}" Foreground="{StaticResource PrimaryTextBursh}" FontSize="12" FontFamily="Microsoft Sans Serif">
+                            <ListBox IsEnabled="{Binding IsExchangeSelectionEnabled}" ItemsSource="{Binding BaseAssets}" Height="150" SelectedItem="{Binding BaseAssetSelected}" Foreground="{StaticResource PrimaryTextBursh}" FontSize="12" FontFamily="Microsoft Sans Serif">
                                 <behaviours:Interaction.Triggers>
                                     <behaviours:EventTrigger EventName="SelectionChanged">
                                         <behaviours:InvokeCommandAction Command="{Binding BaseAssetSelected_Command}"/>
@@ -187,7 +187,7 @@
                         </StackPanel.Resources>
 
                         <Border CornerRadius="3" BorderThickness="1" BorderBrush="{StaticResource SecondaryColorBrush}" Height="24" Background="{StaticResource PrimaryTextBursh}">
-                            <Button Height="22"  BorderThickness="0" Background="Transparent" Command="{Binding OpenQuoteAssetsList_Command}" >
+                            <Button IsEnabled="{Binding IsExchangeSelectionEnabled}" Height="22"  BorderThickness="0" Background="Transparent" Command="{Binding OpenQuoteAssetsList_Command}" >
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100"/>
@@ -200,7 +200,7 @@
                         </Border>
                         
                         <Border BorderThickness="2" CornerRadius="5" Margin="0 3 0 0" BorderBrush="{StaticResource PrimaryTextBursh}" Visibility="{Binding QuoteAssetsVisibility}">
-                            <ListBox ItemsSource="{Binding QuoteAssets}" Background="{StaticResource SecondaryColorBrush}" Height="186" FontSize="12" FontFamily="Microsoft Sans Serif"   Foreground="{StaticResource PrimaryTextBursh}" SelectedItem="{Binding QuoteAssetSelected}">
+                            <ListBox IsEnabled="{Binding IsExchangeSelectionEnabled}" ItemsSource="{Binding QuoteAssets}" Background="{StaticResource SecondaryColorBrush}" Height="186" FontSize="12" FontFamily="Microsoft Sans Serif"   Foreground="{StaticResource PrimaryTextBursh}" SelectedItem="{Binding QuoteAssetSelected}">
                                 <behaviours:Interaction.Triggers>
                                     <behaviours:EventTrigger EventName="SelectionChanged">
                                         <behaviours:InvokeCommandAction Command="{Binding QuoteAssetSelected_Command}"/>
@@ -220,7 +220,7 @@
                         </StackPanel.Resources>
 
                         <Border CornerRadius="3" BorderThickness="1" BorderBrush="{StaticResource SecondaryColorBrush}" Height="24" Background="{StaticResource PrimaryTextBursh}">
-                            <Button Height="22"  BorderThickness="0" Background="Transparent" Command="{Binding OpenTradingSidesList_Command}" >
+                            <Button IsEnabled="{Binding IsExchangeSelectionEnabled}" Height="22"  BorderThickness="0" Background="Transparent" Command="{Binding OpenTradingSidesList_Command}" >
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100"/>
@@ -233,16 +233,16 @@
                         </Border>
 
                         <Border BorderThickness="2" CornerRadius="5" Margin="0 3 0 0" BorderBrush="{StaticResource PrimaryTextBursh}" Background="{StaticResource SecondaryColorBrush}" Visibility="{Binding TradingSidesVisibility}">
-                    
-                            <ListBox Height="96" SelectedItem="{Binding SideSelected}">
+
+                            <ListBox IsEnabled="{Binding IsExchangeSelectionEnabled}" Height="96" SelectedItem="{Binding SideSelected}">
                                 <ListBoxItem IsSelected="True">
                                     <TextBlock Text="ALL"  Foreground="White" FontSize="12" FontWeight="Bold"/>
                                 </ListBoxItem>
                                 <ListBoxItem>
-                                    <TextBlock Text="BUY" Foreground="#18cb00" FontSize="12" FontWeight="Bold"/>
+                                    <TextBlock Text="BUY" Foreground="#25D695" FontSize="12" FontWeight="Bold"/>
                                 </ListBoxItem>
                                 <ListBoxItem>
-                                    <TextBlock Text="SELL" Foreground="Red"  FontSize="12" FontWeight="Bold"/>
+                                    <TextBlock Text="SELL" Foreground="{StaticResource PrimaryColorBrush}"  FontSize="12" FontWeight="Bold"/>
                                 </ListBoxItem>
 
                                 <behaviours:Interaction.Triggers>
@@ -256,7 +256,8 @@
 
                     </StackPanel>
 
-                    <Button Style="{StaticResource MaterialDesignFlatAccentBgButton}" 
+                    <Button IsEnabled="{Binding IsExchangeSelectionEnabled}"
+                            Style="{StaticResource MaterialDesignFlatAccentBgButton}" 
                             Content="Search" 
                             Margin="15 0 0 0" 
                             Padding="0 -1 0 0"
@@ -269,7 +270,10 @@
                             VerticalAlignment="Top"
                             Command="{Binding SearchFilledTrades_Command}" 
                             Cursor="Hand"/>
-                
+
+                    <fa5:SvgAwesome x:Name="loginSpinnerIcon" Visibility="{Binding TradeHistoryLoadingSpinnerVisibility}" Icon="Solid_Spinner" VerticalAlignment="Top" Spin="True" Height="20" Width="20" Margin="10 2 0 0" Foreground="White"/>
+
+
                 </StackPanel>
                 
             </Border>       

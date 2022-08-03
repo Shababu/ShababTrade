@@ -7,6 +7,7 @@ using ShababTrade.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace ShababTrade.ViewModels
 {
     internal class TradeHistoryViewModel : BaseViewModel
     {
+        BackgroundWorker backgroundWorker = new BackgroundWorker();
         #region Properties
 
         #region Exchange Users
@@ -311,6 +313,19 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
+        #region Trade History Loading Spinner Visibility
+
+        private Visibility _tradeHistoryLoadingSpinnerVisibility = Visibility.Collapsed;
+
+        public Visibility TradeHistoryLoadingSpinnerVisibility
+        {
+            get => _tradeHistoryLoadingSpinnerVisibility;
+            set => Set(ref _tradeHistoryLoadingSpinnerVisibility, value);
+        }
+
+        #endregion
+        
+
         #endregion
 
         #region Commands
@@ -430,41 +445,10 @@ namespace ShababTrade.ViewModels
         private bool CanSearchFilledTradesCommandExecute(object o) => true;
         private void OnSearchFilledTradesCommandEcexuted(object o)
         {
-            try
-            {
-                FilledTrades = new List<AppFilledTrade>();
-                FilledTradesShared = new List<IFilledTrade>();
-                IAccountInfo accountInfo = GetAccountInfoObject();
-                FilledTradesShared = accountInfo.GetTrades(GetExchangeUserObject(), BaseAsset + QuoteAsset);
-                if (Side != "ALL")
-                {
-                    FilledTradesShared = FilledTradesShared.Where(trade => trade.Side.ToString() == Side).ToList();
-                }
-
-                FilledTradesShared = FilledTradesShared.Where(trade => trade.TimeStamp >= StartDate && trade.TimeStamp <= EndDate).ToList();
-
-                foreach (var trade in FilledTradesShared)
-                {
-                    FilledTrades.Add(new AppFilledTrade(trade));
-                }
-                NumberOfPages = (int)Math.Ceiling(FilledTrades.Count / 20M);
-                CurrentPage = 1;
-                var filledTrades = FilledTradesShared.Take(20).ToList();
-                FilledTrades = AppFilledTrade.ConvertToAppFilledTrades(filledTrades);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("No Data.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-
-            if (FilledTrades != null && FilledTrades.Count > 0)
-            {
-                TradуHistoryPaginationVisibility = TradeHistorySectionVisibility = Visibility.Visible;
-            }
-            else
-            {
-                TradуHistoryPaginationVisibility = TradeHistorySectionVisibility = Visibility.Collapsed;
-            }
+            TradeHistory_CloseComboBoxes();
+            IsExchangeSelectionEnabled = false;
+            TradeHistoryLoadingSpinnerVisibility = Visibility.Visible;
+            backgroundWorker.RunWorkerAsync();
         }
         #endregion
 
@@ -692,6 +676,58 @@ namespace ShababTrade.ViewModels
 
             StartDate = DateTime.Today;
             EndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59);
+
+            backgroundWorker.DoWork += BackgroundWorker_DoWork;
+            backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
+        }
+
+        private void BackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            IsExchangeSelectionEnabled = true;
+            TradeHistoryLoadingSpinnerVisibility = Visibility.Collapsed;
+
+            if (FilledTrades != null && FilledTrades.Count > 0)
+            {
+                TradуHistoryPaginationVisibility = TradeHistorySectionVisibility = Visibility.Visible;
+            }
+            else
+            {
+                TradуHistoryPaginationVisibility = TradeHistorySectionVisibility = Visibility.Collapsed;
+            }
+        }
+
+        private void BackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                FilledTrades = new List<AppFilledTrade>();
+                FilledTradesShared = new List<IFilledTrade>();
+                IAccountInfo accountInfo = GetAccountInfoObject();
+                FilledTradesShared = accountInfo.GetTrades(GetExchangeUserObject(), BaseAsset + QuoteAsset);
+                if (Side != "ALL")
+                {
+                    FilledTradesShared = FilledTradesShared.Where(trade => trade.Side.ToString() == Side).ToList();
+                }
+
+                FilledTradesShared = FilledTradesShared.Where(trade => trade.TimeStamp >= StartDate && trade.TimeStamp <= EndDate).ToList();
+
+                foreach (var trade in FilledTradesShared)
+                {
+                    FilledTrades.Add(new AppFilledTrade(trade));
+                }
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    NumberOfPages = (int)Math.Ceiling(FilledTrades.Count / 20M);
+                    CurrentPage = 1;
+                    var filledTrades = FilledTradesShared.Take(20).ToList();
+                    FilledTrades = AppFilledTrade.ConvertToAppFilledTrades(filledTrades);
+                });
+                
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("No Data.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
     }
 }

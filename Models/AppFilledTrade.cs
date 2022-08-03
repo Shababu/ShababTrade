@@ -5,7 +5,7 @@ using TradingCommonTypes;
 
 namespace ShababTrade.Models
 {
-    internal class AppFilledTrade : IFilledTrade
+    public class AppFilledTrade : IFilledTrade
     {
         public long OrderId { get; set; }
         public string Symbol { get; set; }

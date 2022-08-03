@@ -7,6 +7,16 @@ namespace ShababTrade.ViewModels.Base
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        #region Is Exchange Selection Enabled
+
+        private bool _isExchangeSelectionEnabled = true;
+        public bool IsExchangeSelectionEnabled
+        {
+            get => _isExchangeSelectionEnabled;
+            set => Set(ref _isExchangeSelectionEnabled, value);
+        }
+
+        #endregion
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

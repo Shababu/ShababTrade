@@ -33,11 +33,12 @@
         
         <Border Grid.Row="0" Grid.Column="0" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5"  Visibility="{Binding MainMenuVisibility}">
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Button Style="{StaticResource MainTabStyle}" Background="{Binding AccountTabBackground}"      Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Account" Content="Account" Cursor="Hand"/>
-                <Button Style="{StaticResource MainTabStyle}" Background="{Binding TradeHistoryTabBackground}" Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="History" Content="Trade History" Cursor="Hand"/>
-                <Button Style="{StaticResource MainTabStyle}" Background="{Binding SpotTabBackground}"         Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Spot"    Content="Spot"/>
-                <Button Style="{StaticResource MainTabStyle}" Background="{Binding AutoTradingTabBackground}"  Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Auto"    Content="Auto Trading"/>
-                <Button Style="{StaticResource MainTabStyle}" Background="{Binding FuturesTabBackground}"      Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Futures" Content="Futures" Cursor="Hand"/>
+                <Button IsEnabled="{Binding IsExchangeSelectionEnabled}" Style="{StaticResource MainTabStyle}" Background="{Binding AccountTabBackground}"      Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Account" Content="Account" Cursor="Hand"/>
+                <Button IsEnabled="{Binding IsExchangeSelectionEnabled}" Style="{StaticResource MainTabStyle}" Background="{Binding TradeHistoryTabBackground}" Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="History" Content="Trade History" Cursor="Hand"/>
+                <Button IsEnabled="{Binding IsExchangeSelectionEnabled}" Style="{StaticResource MainTabStyle}" Background="{Binding SpotTabBackground}"         Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Spot"    Content="Spot"/>
+                <Button IsEnabled="{Binding IsExchangeSelectionEnabled}" Style="{StaticResource MainTabStyle}" Background="{Binding AutoTradingTabBackground}"  Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Auto"    Content="Auto Trading"/>
+                <Button IsEnabled="{Binding IsExchangeSelectionEnabled}" Style="{StaticResource MainTabStyle}" Background="{Binding FuturesTabBackground}"      Foreground="{StaticResource PrimaryTextBursh}" Command="{Binding SelectMainMenuTabCommand}" CommandParameter="Futures" Content="Futures" Cursor="Hand"/>
+                <fa5:SvgAwesome Visibility="{Binding MainMenuSpinnerVisibility}" Icon="Solid_Spinner" VerticalAlignment="Top" Spin="True" Height="20" Width="20" Margin="10 5 0 0" Foreground="White"/>
             </StackPanel>
         </Border>
 

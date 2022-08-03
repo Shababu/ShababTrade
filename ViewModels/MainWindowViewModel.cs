@@ -21,7 +21,12 @@ namespace ShababTrade.ViewModels
 {
     internal class MainWindowViewModel : BaseViewModel
     {
-        private BackgroundWorker backgroundWorker = new BackgroundWorker();
+        private BackgroundWorker mainWindowBackgroundWorker = new BackgroundWorker();
+        private BackgroundWorker loginBackgroundWorker = new BackgroundWorker();
+        private BackgroundWorker accountBackgroundWorker = new BackgroundWorker();
+        private BackgroundWorker tradeHistoryBackgroundWorker = new BackgroundWorker();
+        private BackgroundWorker spotBackgroundWorker = new BackgroundWorker();
+        private BackgroundWorker futuresBackgroundWorker = new BackgroundWorker();
 
         #region Properties
 
@@ -358,6 +363,19 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
+        #region Main Menu Spinner Visibility
+
+        private Visibility _mainMenuSpinnerVisibility = Visibility.Collapsed;
+
+        public Visibility MainMenuSpinnerVisibility
+        {
+            get => _mainMenuSpinnerVisibility;
+            set => Set(ref _mainMenuSpinnerVisibility, value);
+        }
+
+        #endregion
+        
+
         #endregion
 
         #region Commands
@@ -372,17 +390,17 @@ namespace ShababTrade.ViewModels
         {
             var activeTabColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D81D3C"));
 
-            SetMainTabsBackgroundToDefault();
-
             switch (p as string)
             {
                 case "Account":
-                    AccountTabBackground = activeTabColor;
-                    CurrentViewModel = new AccountViewModel(ExchangeUsers, SelectedExchange);
+                    accountBackgroundWorker.DoWork += AccountBackgroundWorker_DoWork;
+                    accountBackgroundWorker.RunWorkerCompleted += AccountBackgroundWorker_RunWorkerCompleted;
+                    accountBackgroundWorker.RunWorkerAsync();
                     break;
                 case "History":
-                    TradeHistoryTabBackground = activeTabColor;
-                    CurrentViewModel = new TradeHistoryViewModel(ExchangeUsers, SelectedExchange);
+                    tradeHistoryBackgroundWorker.DoWork += TradeHistoryBackgroundWorker_OpenTradeHistoryView;
+                    tradeHistoryBackgroundWorker.RunWorkerCompleted += TradeHistoryBackgroundWorker_RunWorkerCompleted;
+                    tradeHistoryBackgroundWorker.RunWorkerAsync();
                     break;
                 case "Spot":
                     SpotTabBackground = activeTabColor;
@@ -394,9 +412,39 @@ namespace ShababTrade.ViewModels
                     FuturesTabBackground = activeTabColor;
                     break;
             }
+
+            MainMenuSpinnerVisibility = Visibility.Visible;
+            IsExchangeSelectionEnabled = false;
         }
 
-        
+        private void AccountBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            SetMainTabsBackgroundToDefault();
+            AccountTabBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D81D3C"));
+            MainMenuSpinnerVisibility = Visibility.Collapsed;
+            IsExchangeSelectionEnabled = true;
+        }
+
+        private void AccountBackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
+        {
+            BlockAllInputs(CurrentViewModel);
+            CurrentViewModel = new AccountViewModel(ExchangeUsers, SelectedExchange);
+        }
+
+        private void TradeHistoryBackgroundWorker_OpenTradeHistoryView(object? sender, DoWorkEventArgs e)
+        {
+            BlockAllInputs(CurrentViewModel);
+            CurrentViewModel = new TradeHistoryViewModel(ExchangeUsers, SelectedExchange);
+        }
+        private void TradeHistoryBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            SetMainTabsBackgroundToDefault();
+            TradeHistoryTabBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D81D3C"));
+            MainMenuSpinnerVisibility = Visibility.Collapsed;
+            IsExchangeSelectionEnabled = true;
+        }
+
+
 
         #endregion
 
@@ -409,7 +457,7 @@ namespace ShababTrade.ViewModels
             ShowLoadingSpinner();
             LoginErrorVisibility = Visibility.Hidden;
 
-            backgroundWorker.RunWorkerAsync();
+            loginBackgroundWorker.RunWorkerAsync();
         }
 
         #endregion
@@ -554,6 +602,30 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
+        #region Block All Inputs
+
+        private void BlockAllInputs(BaseViewModel viewModel)
+        {
+            if(viewModel is AccountViewModel)
+            {
+                try
+                {
+                    ((AccountViewModel)CurrentViewModel).IsExchangeSelectionEnabled = false;
+                }
+                catch (Exception ex) { }
+            }
+            else if (viewModel is TradeHistoryViewModel)
+            {
+                try
+                {
+                    ((TradeHistoryViewModel)CurrentViewModel).IsExchangeSelectionEnabled = false;
+                }
+                catch (Exception ex) { }
+            }
+        }
+
+        #endregion
+
         #endregion
 
         public MainWindowViewModel()
@@ -563,7 +635,7 @@ namespace ShababTrade.ViewModels
             OpenSignUpViewCommand = new RelayCommand(OnOpenSignUpViewCommandExecuted, CanOpenSignUpViewCommandExecute);
             SelectMainMenuTabCommand = new RelayCommand(OnSelectMainMenuTabCommandExecuted, CanSelectMainMenuTabCommandExecute);
 
-            backgroundWorker.DoWork += Login;
+            loginBackgroundWorker.DoWork += Login;
         }
     }
 }

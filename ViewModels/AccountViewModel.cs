@@ -26,8 +26,6 @@ namespace ShababTrade.ViewModels
     {
         private BackgroundWorker backgroundWorker = new BackgroundWorker();
 
-
-
         #region Properties
 
         #region Exchange Users
@@ -131,16 +129,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Is Exchange Selection Enabled
-
-        private bool _isExchangeSelectionEnabled = true;
-        public bool IsExchangeSelectionEnabled
-        {
-            get => _isExchangeSelectionEnabled;
-            set => Set(ref _isExchangeSelectionEnabled, value);
-        }
-
-        #endregion
+       
         
 
         #endregion
@@ -268,7 +257,7 @@ namespace ShababTrade.ViewModels
 
             ExchangeUsers = appUsers;
 
-            foreach(var user in ExchangeUsers)
+            foreach (var user in ExchangeUsers)
             {
                 AvailableExchanges.Add(user.Exchange);
             }
@@ -276,7 +265,7 @@ namespace ShababTrade.ViewModels
             OpenAccountView(appUsers);
 
             backgroundWorker.DoWork += UpdateAccountView;
-            backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted; ;
+            backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
         }
 
         private void BackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
