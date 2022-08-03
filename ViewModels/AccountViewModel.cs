@@ -129,9 +129,6 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-       
-        
-
         #endregion
 
         #region Commands
@@ -250,23 +247,9 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        public AccountViewModel(List<ExchangeUser> appUsers, string selectedExchange)
-        {
-            SelectedExchange = selectedExchange;
-            SelectedExchangeChangedCommand = new RelayCommand(OnSelectedExchangeChangedCommandExecuted, CanSelectedExchangeChangedCommandExecute);
+        #region Event Handlers
 
-            ExchangeUsers = appUsers;
-
-            foreach (var user in ExchangeUsers)
-            {
-                AvailableExchanges.Add(user.Exchange);
-            }
-
-            OpenAccountView(appUsers);
-
-            backgroundWorker.DoWork += UpdateAccountView;
-            backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
-        }
+        #region BackgroundWorker_RunWorkerCompleted
 
         private void BackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
@@ -274,9 +257,12 @@ namespace ShababTrade.ViewModels
             IsExchangeSelectionEnabled = true;
         }
 
-        private void UpdateAccountView(object? sender, DoWorkEventArgs e)
-        {
+        #endregion
 
+        #region BackgroundWorker_DoWork
+
+        private void BackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
+        {
             switch (SelectedExchange)
             {
                 case "Binance":
@@ -293,5 +279,27 @@ namespace ShababTrade.ViewModels
                 UpdateBalancesPieChart();
             });
         }
+
+        #endregion
+
+        #endregion
+
+        public AccountViewModel(List<ExchangeUser> appUsers, string selectedExchange)
+        {
+            SelectedExchange = selectedExchange;
+            SelectedExchangeChangedCommand = new RelayCommand(OnSelectedExchangeChangedCommandExecuted, CanSelectedExchangeChangedCommandExecute);
+
+            ExchangeUsers = appUsers;
+
+            foreach (var user in ExchangeUsers)
+            {
+                AvailableExchanges.Add(user.Exchange);
+            }
+
+            OpenAccountView(appUsers);
+
+            backgroundWorker.DoWork += BackgroundWorker_DoWork;
+            backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
+        }        
     }
 }

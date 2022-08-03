@@ -20,6 +20,7 @@ namespace ShababTrade.ViewModels
     internal class TradeHistoryViewModel : BaseViewModel
     {
         BackgroundWorker backgroundWorker = new BackgroundWorker();
+
         #region Properties
 
         #region Exchange Users
@@ -58,7 +59,7 @@ namespace ShababTrade.ViewModels
 
 
 
-        #region Свойство видимости Списка BaseAssets
+        #region Base Assets Visibility
 
         private Visibility _baseAssetsVisibility = Visibility.Collapsed;
         public Visibility BaseAssetsVisibility
@@ -69,7 +70,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство видимости Списка QuoteAssets
+        #region Quote Assets Visibility
 
         private Visibility _quoteAssetsVisibility = Visibility.Collapsed;
         public Visibility QuoteAssetsVisibility
@@ -80,7 +81,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство видимости секции торговых операций
+        #region Trade History Section Visibility
 
         private Visibility _tradeHistorySectionVisibility = Visibility.Collapsed;
         public Visibility TradeHistorySectionVisibility
@@ -91,27 +92,31 @@ namespace ShababTrade.ViewModels
 
         #endregion        
 
-        #region Свойство видимости Списка TradingSides
+        #region Trading Sides Visibility
+
         private Visibility _tradingSidesVisibility = Visibility.Collapsed;
         public Visibility TradingSidesVisibility
         {
             get => _tradingSidesVisibility;
             set { Set(ref _tradingSidesVisibility, value); }
         }
+
         #endregion
 
-        #region Свойство видимости Pagination кнопок
+        #region Tradу History Pagination Visibility
+
         private Visibility _tradуHistoryPaginationVisibility = Visibility.Collapsed;
         public Visibility TradуHistoryPaginationVisibility
         {
             get => _tradуHistoryPaginationVisibility;
             set { Set(ref _tradуHistoryPaginationVisibility, value); }
         }
+
         #endregion
 
 
 
-        #region Свойство StartDate
+        #region Start Date
 
         private DateTime _startDate;
 
@@ -123,7 +128,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство EndDate
+        #region End Date
 
         private DateTime _endDate;
 
@@ -135,7 +140,7 @@ namespace ShababTrade.ViewModels
 
         #endregion  
 
-        #region Свойство Поиска символа (Текстовое)
+        #region Txt Search Symbol
 
         private string _txtSearchSymbol = "";
 
@@ -150,7 +155,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство Items Source для BaseAsset
+        #region Items Source for Base Asset
 
         private List<string> _baseAssets;
 
@@ -162,7 +167,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство Items Source для QuoteAsset
+        #region Items Source for Quote Asset
 
         private List<string> _quoteAssets;
 
@@ -174,7 +179,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство TradingSide
+        #region Trading Side
 
         private string _side = "ALL";
 
@@ -186,7 +191,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство BaseAsset
+        #region Base Asset
 
         private string _baseAsset;
 
@@ -198,7 +203,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство QuoteAsset
+        #region Quote Asset
 
         private string _quoteAsset;
 
@@ -210,7 +215,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство BaseAssetSelected
+        #region Base Asset Selected
 
         private string _baseAssetSelected;
 
@@ -222,7 +227,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство QuoteAssetSelected
+        #region Quote Asset Selected
 
         private string _quoteAssetSelected;
 
@@ -234,7 +239,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство SideSelected
+        #region Side Selected
 
         private string _sideSelected = "ALL";
 
@@ -246,7 +251,7 @@ namespace ShababTrade.ViewModels
 
         #endregion        
 
-        #region Свойство базовых активов (Текстовое, общее)
+        #region Base Assets Shared
 
         private List<string> _baseAssetsShared;
 
@@ -261,7 +266,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство ItemsSource исполненных ордеров
+        #region Filled Trades
 
         private List<AppFilledTrade> _filledTrades = new List<AppFilledTrade>();
 
@@ -273,7 +278,8 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство ItemsSource исполненных ордеров
+        #region Filled Trades Shared
+
         private List<IFilledTrade> _filledTradesShared = new List<IFilledTrade>();
 
         public List<IFilledTrade> FilledTradesShared
@@ -281,9 +287,10 @@ namespace ShababTrade.ViewModels
             get => _filledTradesShared;
             set { Set(ref _filledTradesShared, value); }
         }
+
         #endregion
 
-        #region Свойство Текущая страница
+        #region Current Page
 
         private int _currentPage = 1;
 
@@ -298,7 +305,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Свойство Количество страниц
+        #region Number Of Pages
 
         private int _numberOfPages;
 
@@ -324,13 +331,14 @@ namespace ShababTrade.ViewModels
         }
 
         #endregion
-        
+
 
         #endregion
 
         #region Commands
 
-        #region Команда "Открыть список базовых активов"
+        #region Open Base Assets List Command
+
         public ICommand OpenBaseAssetsList_Command { get; }
 
         private bool CanOpenBaseAssetsListCommandExecute(object o) => true;
@@ -343,9 +351,11 @@ namespace ShababTrade.ViewModels
             else
                 BaseAssetsVisibility = Visibility.Visible;
         }
+
         #endregion
 
-        #region Команда "Открыть список запрашиваемых активов"
+        #region Open Quote Assets List Command
+
         public ICommand OpenQuoteAssetsList_Command { get; }
 
         private bool CanOpenQuoteAssetsListCommandExecute(object o) => true;
@@ -358,9 +368,11 @@ namespace ShababTrade.ViewModels
             else
                 QuoteAssetsVisibility = Visibility.Visible;
         }
+
         #endregion
 
-        #region Команда "Открыть список сторон Buy/Sell"
+        #region Open Trading Sides List Command
+
         public ICommand OpenTradingSidesList_Command { get; }
 
         private bool CanOpenTradingSidesListCommandExecute(object o) => true;
@@ -373,9 +385,11 @@ namespace ShababTrade.ViewModels
             else
                 TradingSidesVisibility = Visibility.Visible;
         }
+
         #endregion
 
-        #region Команда "Поиск базового актива"
+        #region Search Asset Command
+
         public ICommand SearchAsset_Command { get; }
 
         private bool CanSearchAssetCommandExecute(object o) => true;
@@ -384,9 +398,11 @@ namespace ShababTrade.ViewModels
             BaseAssets = BaseAssetsShared.Distinct().Where(asset => asset.StartsWith(TxtSearchSymbol.ToUpper())).ToList();
             BaseAssetsVisibility = Visibility.Visible;
         }
+
         #endregion
 
-        #region Команда "Базовый актив выбран"
+        #region Base Asset Selected Command
+
         public ICommand BaseAssetSelected_Command { get; }
 
         private bool CanBaseAssetSelectedCommandExecute(object o) => true;
@@ -398,9 +414,11 @@ namespace ShababTrade.ViewModels
             }
             BaseAssetsVisibility = Visibility.Collapsed;
         }
+
         #endregion
 
-        #region Команда "Запрашиваемый актив выбран"
+        #region Quote Asset Selected Command
+
         public ICommand QuoteAssetSelected_Command { get; }
 
         private bool CanQuoteAssetSelectedCommandExecute(object o) => true;
@@ -409,9 +427,11 @@ namespace ShababTrade.ViewModels
             QuoteAssetsVisibility = Visibility.Collapsed;
             QuoteAsset = QuoteAssetSelected;
         }
+
         #endregion
 
-        #region Команда "Сторона Buy/Sell выбрана"
+        #region Side Selected Command
+
         public ICommand SideSelected_Command { get; }
 
         private bool CanSideSelectedSelectedCommandExecute(object o) => true;
@@ -427,9 +447,11 @@ namespace ShababTrade.ViewModels
                 Side = SideSelected.Contains("BUY") ? "BUY" : "SELL";
             }
         }
+
         #endregion
 
-        #region Команда "Конечная дата выбрана"
+        #region End Date Selected Command
+
         public ICommand EndDateSelected_Command { get; }
 
         private bool CanEndDateSelectedCommandExecute(object o) => true;
@@ -437,9 +459,11 @@ namespace ShababTrade.ViewModels
         {
             EndDate = new DateTime(EndDate.Year, EndDate.Month, EndDate.Day, 23, 59, 59);
         }
+
         #endregion
 
-        #region Команда "Поиск торговых операций"
+        #region Search Filled Trades Command
+
         public ICommand SearchFilledTrades_Command { get; }
 
         private bool CanSearchFilledTradesCommandExecute(object o) => true;
@@ -450,9 +474,11 @@ namespace ShababTrade.ViewModels
             TradeHistoryLoadingSpinnerVisibility = Visibility.Visible;
             backgroundWorker.RunWorkerAsync();
         }
+
         #endregion
 
-        #region Команда "Открыть первую страницу"
+        #region Open First Page Command
+
         public ICommand OpenFirstPage_Command { get; }
 
         private bool CanOpenFirstPageCommandExecute(object o) => true;
@@ -462,9 +488,11 @@ namespace ShababTrade.ViewModels
             FilledTrades = AppFilledTrade.ConvertToAppFilledTrades(firstTrades);
             CurrentPage = 1;
         }
+
         #endregion
 
-        #region Команда "Открыть предыдущую страницу"
+        #region Open Previous Page Command
+
         public ICommand OpenPreviousPage_Command { get; }
 
         private bool CanOpenPreviousPageCommandExecute(object o) => true;
@@ -477,9 +505,11 @@ namespace ShababTrade.ViewModels
                 CurrentPage--;
             }
         }
+
         #endregion
 
-        #region Команда "Открыть следущую страницу"
+        #region Open Next Page Command
+
         public ICommand OpenNextPage_Command { get; }
 
         private bool CanOpenNextPageCommandExecute(object o) => true;
@@ -492,9 +522,11 @@ namespace ShababTrade.ViewModels
                 CurrentPage++;
             }
         }
+
         #endregion
 
-        #region Команда "Открыть последнюю страницу"
+        #region Open Last Page Command
+
         public ICommand OpenLastPage_Command { get; }
 
         private bool CanOpenLastPageCommandExecute(object o) => true;
@@ -507,6 +539,7 @@ namespace ShababTrade.ViewModels
                 CurrentPage = NumberOfPages;
             }
         }
+
         #endregion
 
         #region Selected Exchange Changed Command
@@ -531,8 +564,11 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
+        #endregion
 
-        #region Команда "Закрыть списки секции Trade History"
+        #region Methods
+
+        #region TradeHistory_CloseComboBoxes
         private void TradeHistory_CloseComboBoxes()
         {
             BaseAssetsVisibility = Visibility.Collapsed;
@@ -541,12 +577,7 @@ namespace ShababTrade.ViewModels
         }
         #endregion
 
-
-
-
-        #endregion
-
-        #region Methods
+        #region GetAccountInfoObject
 
         private IAccountInfo GetAccountInfoObject()
         {
@@ -562,6 +593,10 @@ namespace ShababTrade.ViewModels
                     return new BinanceAccountInfo();
             }
         }
+
+        #endregion
+
+        #region GetExchangeUserObject
 
         private IExchangeUser GetExchangeUserObject()
         {
@@ -582,6 +617,8 @@ namespace ShababTrade.ViewModels
                     return new BinanceApiUser(user.PublicKey, user.PrivateKey);
             }
         }
+
+        #endregion
 
         #region Get Symbols For Binance User
 
@@ -627,10 +664,66 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        public TradeHistoryViewModel()
-        {
+        #region Event Handlers
 
+        #region BackgroundWorker_RunWorkerCompleted
+
+        private void BackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            IsExchangeSelectionEnabled = true;
+            TradeHistoryLoadingSpinnerVisibility = Visibility.Collapsed;
+
+            if (FilledTrades != null && FilledTrades.Count > 0)
+            {
+                TradуHistoryPaginationVisibility = TradeHistorySectionVisibility = Visibility.Visible;
+            }
+            else
+            {
+                TradуHistoryPaginationVisibility = TradeHistorySectionVisibility = Visibility.Collapsed;
+            }
         }
+
+        #endregion
+
+        #region BackgroundWorker_DoWork
+
+        private void BackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                FilledTrades = new List<AppFilledTrade>();
+                FilledTradesShared = new List<IFilledTrade>();
+                IAccountInfo accountInfo = GetAccountInfoObject();
+                FilledTradesShared = accountInfo.GetTrades(GetExchangeUserObject(), BaseAsset + QuoteAsset);
+                if (Side != "ALL")
+                {
+                    FilledTradesShared = FilledTradesShared.Where(trade => trade.Side.ToString() == Side).ToList();
+                }
+
+                FilledTradesShared = FilledTradesShared.Where(trade => trade.TimeStamp >= StartDate && trade.TimeStamp <= EndDate).ToList();
+
+                foreach (var trade in FilledTradesShared)
+                {
+                    FilledTrades.Add(new AppFilledTrade(trade));
+                }
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    NumberOfPages = (int)Math.Ceiling(FilledTrades.Count / 20M);
+                    CurrentPage = 1;
+                    var filledTrades = FilledTradesShared.Take(20).ToList();
+                    FilledTrades = AppFilledTrade.ConvertToAppFilledTrades(filledTrades);
+                });
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("No Data.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        #endregion
+
+        #endregion
 
         public TradeHistoryViewModel(List<ExchangeUser> appUsers, string selectedExchange)
         {
@@ -679,55 +772,6 @@ namespace ShababTrade.ViewModels
 
             backgroundWorker.DoWork += BackgroundWorker_DoWork;
             backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
-        }
-
-        private void BackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
-        {
-            IsExchangeSelectionEnabled = true;
-            TradeHistoryLoadingSpinnerVisibility = Visibility.Collapsed;
-
-            if (FilledTrades != null && FilledTrades.Count > 0)
-            {
-                TradуHistoryPaginationVisibility = TradeHistorySectionVisibility = Visibility.Visible;
-            }
-            else
-            {
-                TradуHistoryPaginationVisibility = TradeHistorySectionVisibility = Visibility.Collapsed;
-            }
-        }
-
-        private void BackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
-        {
-            try
-            {
-                FilledTrades = new List<AppFilledTrade>();
-                FilledTradesShared = new List<IFilledTrade>();
-                IAccountInfo accountInfo = GetAccountInfoObject();
-                FilledTradesShared = accountInfo.GetTrades(GetExchangeUserObject(), BaseAsset + QuoteAsset);
-                if (Side != "ALL")
-                {
-                    FilledTradesShared = FilledTradesShared.Where(trade => trade.Side.ToString() == Side).ToList();
-                }
-
-                FilledTradesShared = FilledTradesShared.Where(trade => trade.TimeStamp >= StartDate && trade.TimeStamp <= EndDate).ToList();
-
-                foreach (var trade in FilledTradesShared)
-                {
-                    FilledTrades.Add(new AppFilledTrade(trade));
-                }
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    NumberOfPages = (int)Math.Ceiling(FilledTrades.Count / 20M);
-                    CurrentPage = 1;
-                    var filledTrades = FilledTradesShared.Take(20).ToList();
-                    FilledTrades = AppFilledTrade.ConvertToAppFilledTrades(filledTrades);
-                });
-                
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("No Data.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
+        }        
     }
 }

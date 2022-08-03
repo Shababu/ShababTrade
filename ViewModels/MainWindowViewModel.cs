@@ -21,7 +21,6 @@ namespace ShababTrade.ViewModels
 {
     internal class MainWindowViewModel : BaseViewModel
     {
-        private BackgroundWorker mainWindowBackgroundWorker = new BackgroundWorker();
         private BackgroundWorker loginBackgroundWorker = new BackgroundWorker();
         private BackgroundWorker accountBackgroundWorker = new BackgroundWorker();
         private BackgroundWorker tradeHistoryBackgroundWorker = new BackgroundWorker();
@@ -373,8 +372,7 @@ namespace ShababTrade.ViewModels
             set => Set(ref _mainMenuSpinnerVisibility, value);
         }
 
-        #endregion
-        
+        #endregion        
 
         #endregion
 
@@ -398,7 +396,7 @@ namespace ShababTrade.ViewModels
                     accountBackgroundWorker.RunWorkerAsync();
                     break;
                 case "History":
-                    tradeHistoryBackgroundWorker.DoWork += TradeHistoryBackgroundWorker_OpenTradeHistoryView;
+                    tradeHistoryBackgroundWorker.DoWork += TradeHistoryBackgroundWorker_DoWork;
                     tradeHistoryBackgroundWorker.RunWorkerCompleted += TradeHistoryBackgroundWorker_RunWorkerCompleted;
                     tradeHistoryBackgroundWorker.RunWorkerAsync();
                     break;
@@ -416,36 +414,7 @@ namespace ShababTrade.ViewModels
             MainMenuSpinnerVisibility = Visibility.Visible;
             IsExchangeSelectionEnabled = false;
         }
-
-        private void AccountBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
-        {
-            SetMainTabsBackgroundToDefault();
-            AccountTabBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D81D3C"));
-            MainMenuSpinnerVisibility = Visibility.Collapsed;
-            IsExchangeSelectionEnabled = true;
-        }
-
-        private void AccountBackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
-        {
-            BlockAllInputs(CurrentViewModel);
-            CurrentViewModel = new AccountViewModel(ExchangeUsers, SelectedExchange);
-        }
-
-        private void TradeHistoryBackgroundWorker_OpenTradeHistoryView(object? sender, DoWorkEventArgs e)
-        {
-            BlockAllInputs(CurrentViewModel);
-            CurrentViewModel = new TradeHistoryViewModel(ExchangeUsers, SelectedExchange);
-        }
-        private void TradeHistoryBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
-        {
-            SetMainTabsBackgroundToDefault();
-            TradeHistoryTabBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D81D3C"));
-            MainMenuSpinnerVisibility = Visibility.Collapsed;
-            IsExchangeSelectionEnabled = true;
-        }
-
-
-
+        
         #endregion
 
         #region Login Command
@@ -456,6 +425,7 @@ namespace ShababTrade.ViewModels
         {
             ShowLoadingSpinner();
             LoginErrorVisibility = Visibility.Hidden;
+            IsExchangeSelectionEnabled = false;
 
             loginBackgroundWorker.RunWorkerAsync();
         }
@@ -537,41 +507,6 @@ namespace ShababTrade.ViewModels
 
         #region Methods
 
-        #region Login
-
-        public void Login(object? sender, DoWorkEventArgs e)
-        {
-            if (!string.IsNullOrEmpty(Username) && Password.Length > 0)
-            {
-                ExchangeUsers = ShababTradeDataAccessor.GetExchangeUsersByUsernameAndPawwsord(new NetworkCredential(Username, Password));
-                if (ExchangeUsers.Count > 0)
-                {
-                    List<string> avaliableExchanges = new List<string>();
-                    foreach (var user in ExchangeUsers)
-                    {
-                        avaliableExchanges.Add(user.Exchange);
-                    }
-                    CurrentViewModel = new AccountViewModel(ExchangeUsers, SelectedExchange);
-                    LoginViewVisibility = Visibility.Collapsed;
-                    MainMenuVisibility = Visibility.Visible;
-                }
-
-                else
-                {
-                    LoginErrorVisibility = Visibility.Visible;
-                    ShowLoginButton();
-                }
-            }
-
-            else
-            {
-                LoginErrorVisibility = Visibility.Visible;
-                ShowLoginButton();
-            }
-        }
-
-        #endregion
-
         #region Show Login Button
 
         private void ShowLoginButton()
@@ -628,6 +563,98 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
+        #region Event Handlers
+
+        #region Login
+
+        public void LoginBackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Username) && Password.Length > 0)
+            {
+                ExchangeUsers = ShababTradeDataAccessor.GetExchangeUsersByUsernameAndPawwsord(new NetworkCredential(Username, Password));
+                if (ExchangeUsers.Count > 0)
+                {
+                    List<string> avaliableExchanges = new List<string>();
+                    foreach (var user in ExchangeUsers)
+                    {
+                        avaliableExchanges.Add(user.Exchange);
+                    }
+                    CurrentViewModel = new AccountViewModel(ExchangeUsers, SelectedExchange);
+                    LoginViewVisibility = Visibility.Collapsed;
+                    MainMenuVisibility = Visibility.Visible;
+                }
+
+                else
+                {
+                    LoginErrorVisibility = Visibility.Visible;
+                    ShowLoginButton();
+                }
+            }
+
+            else
+            {
+                LoginErrorVisibility = Visibility.Visible;
+                ShowLoginButton();
+            }
+        }
+
+        #endregion
+
+        #region Login Completed
+
+        private void LoginBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            IsExchangeSelectionEnabled = true;
+        }
+
+        #endregion
+
+        #region AccountBackgroundWorker_DoWork
+
+        private void AccountBackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
+        {
+            BlockAllInputs(CurrentViewModel);
+            CurrentViewModel = new AccountViewModel(ExchangeUsers, SelectedExchange);
+        }
+
+        #endregion
+
+        #region AccountBackgroundWorker_RunWorkerCompleted
+
+        private void AccountBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            SetMainTabsBackgroundToDefault();
+            AccountTabBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D81D3C"));
+            MainMenuSpinnerVisibility = Visibility.Collapsed;
+            IsExchangeSelectionEnabled = true;
+        }
+
+        #endregion
+
+        #region TradeHistoryBackgroundWorker_DoWork
+
+        private void TradeHistoryBackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
+        {
+            BlockAllInputs(CurrentViewModel);
+            CurrentViewModel = new TradeHistoryViewModel(ExchangeUsers, SelectedExchange);
+        }
+
+        #endregion
+
+        #region TradeHistoryBackgroundWorker_RunWorkerCompleted
+
+        private void TradeHistoryBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            SetMainTabsBackgroundToDefault();
+            TradeHistoryTabBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D81D3C"));
+            MainMenuSpinnerVisibility = Visibility.Collapsed;
+            IsExchangeSelectionEnabled = true;
+        }
+
+        #endregion
+
+        #endregion
+
         public MainWindowViewModel()
         {
             AddApiKeysCommand = new RelayCommand(OnAddApiKeysCommandExecuted, CanAddApiKeysCommandExecute);
@@ -635,7 +662,8 @@ namespace ShababTrade.ViewModels
             OpenSignUpViewCommand = new RelayCommand(OnOpenSignUpViewCommandExecuted, CanOpenSignUpViewCommandExecute);
             SelectMainMenuTabCommand = new RelayCommand(OnSelectMainMenuTabCommandExecuted, CanSelectMainMenuTabCommandExecute);
 
-            loginBackgroundWorker.DoWork += Login;
-        }
+            loginBackgroundWorker.DoWork += LoginBackgroundWorker_DoWork;
+            loginBackgroundWorker.RunWorkerCompleted += LoginBackgroundWorker_RunWorkerCompleted;
+        }        
     }
 }

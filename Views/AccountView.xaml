@@ -44,7 +44,8 @@
                         </ie:Interaction.Triggers>
                     </ComboBox>
 
-                    <fa5:SvgAwesome x:Name="loginSpinnerIcon" Visibility="{Binding AccountLoadingSpinnerVisibility}" Icon="Solid_Spinner" Spin="True" Height="20" Width="20" Margin="10 0 0 0" Foreground="White"/>
+                    <fa5:SvgAwesome x:Name="loginSpinnerIcon" Visibility="{Binding AccountLoadingSpinnerVisibility}" 
+                                    Icon="Solid_Spinner" Spin="True" Height="20" Width="20" Margin="10 0 0 0" Foreground="White"/>
 
                 </StackPanel>
 
@@ -98,8 +99,8 @@
                             <Run Text="Rub"/>
                         </TextBlock>
                     
-                        <lvc:PieChart Series="{Binding BalancesCollection_Chart}" Foreground="{StaticResource SecondaryTextBursh}" InnerRadius="70" Width="200" Height="200" Margin="10 0 40 10" VerticalAlignment="Top" >
-
+                        <lvc:PieChart Series="{Binding BalancesCollection_Chart}" Foreground="{StaticResource SecondaryTextBursh}" 
+                                      InnerRadius="70" Width="200" Height="200" Margin="10 0 40 10" VerticalAlignment="Top" >
                         </lvc:PieChart>
 
                     </StackPanel>

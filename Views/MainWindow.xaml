@@ -117,16 +117,20 @@
                            Visibility="{Binding LoginButtonVisibility}"/>
                 <Border    Margin="10 20 10 0" Height="40" Visibility="{Binding LoginSpinnerVisibility}" CornerRadius="3"
                            Background="{StaticResource SecondaryColorBrush}">
+                    
                     <fa5:SvgAwesome x:Name="loginSpinnerIcon" Icon="Solid_Spinner" Spin="True" Height="20" Width="20" Foreground="White"/>
+                
                 </Border>
+                
                 <TextBlock Margin="0 20 0 0" FontSize="16" TextAlignment="Center" Visibility="{Binding SignupHyperlinkVisibility}">
                     <Run       Foreground="{StaticResource SecondaryTextBursh}" Text="Not a member?"/>
-                    <Hyperlink Foreground="{StaticResource HyperlinkColorBrush}" Command="{Binding OpenSignUpViewCommand}">Sign in</Hyperlink>
+                    <Hyperlink IsEnabled="{Binding IsExchangeSelectionEnabled}" Foreground="{StaticResource HyperlinkColorBrush}" Command="{Binding OpenSignUpViewCommand}">Sign in</Hyperlink>
                 </TextBlock>
 
                 <TextBlock Margin="0 20 0 0" FontSize="16" TextAlignment="Center" Visibility="{Binding LoginHyperlinkVisibility}" >
                     <Hyperlink Foreground="{StaticResource HyperlinkColorBrush}" Command="{Binding OpenSignUpViewCommand}">Go back</Hyperlink>
                 </TextBlock>
+                
             </StackPanel>
 
         </Border>
