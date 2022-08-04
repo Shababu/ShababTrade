@@ -26,6 +26,10 @@
                 <views:TradeHistoryView/>
             </DataTemplate>
 
+            <DataTemplate DataType="{x:Type viewModels:SpotViewModel}">
+                <views:SpotView/>
+            </DataTemplate>
+
             <SolidColorBrush Color="#D81D3C" x:Key="PrimaryColorBrush"/>
             <SolidColorBrush Color="#2D2D2D" x:Key="SecondaryColorBrush"/>
             <SolidColorBrush Color="White" x:Key="PrimaryTextBursh"/>

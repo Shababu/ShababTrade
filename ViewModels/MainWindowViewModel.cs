@@ -125,6 +125,18 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
+        #region Main Menu Spinner Visibility
+
+        private Visibility _mainMenuSpinnerVisibility = Visibility.Collapsed;
+
+        public Visibility MainMenuSpinnerVisibility
+        {
+            get => _mainMenuSpinnerVisibility;
+            set => Set(ref _mainMenuSpinnerVisibility, value);
+        }
+
+        #endregion        
+
         #region Register User Result Text
 
         private string _registerUserResultText = string.Empty;
@@ -173,27 +185,8 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Selected Exchange
 
-        private string _selectedExchange;
-        public string SelectedExchange
-        {
-            get => _selectedExchange;
-            set => Set(ref _selectedExchange, value);
-        }
 
-        #endregion
-
-        #region Available Exchanges
-
-        private ObservableCollection<string> _availableExchanges = new ObservableCollection<string>() { "Binance", "Bitrue"};
-        public ObservableCollection<string> AvailableExchanges
-        {
-            get => _availableExchanges;
-            set => Set(ref _availableExchanges, value);
-        }
-
-        #endregion
 
         #region Login View Width
 
@@ -255,17 +248,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Exchange Users
-
-        private List<ExchangeUser> _exchangeUsers = new List<ExchangeUser>();
-
-        public List<ExchangeUser> ExchangeUsers
-        {
-            get => _exchangeUsers;
-            set => Set(ref _exchangeUsers, value);
-        }
-
-        #endregion   
+ 
 
         #region Username
 
@@ -362,18 +345,6 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Main Menu Spinner Visibility
-
-        private Visibility _mainMenuSpinnerVisibility = Visibility.Collapsed;
-
-        public Visibility MainMenuSpinnerVisibility
-        {
-            get => _mainMenuSpinnerVisibility;
-            set => Set(ref _mainMenuSpinnerVisibility, value);
-        }
-
-        #endregion        
-
         #endregion
 
         #region Commands
@@ -401,7 +372,9 @@ namespace ShababTrade.ViewModels
                     tradeHistoryBackgroundWorker.RunWorkerAsync();
                     break;
                 case "Spot":
-                    SpotTabBackground = activeTabColor;
+                    tradeHistoryBackgroundWorker.DoWork += SpotBackgroundWorker_DoWork;
+                    tradeHistoryBackgroundWorker.RunWorkerCompleted += SpotBackgroundWorker_RunWorkerCompleted;
+                    tradeHistoryBackgroundWorker.RunWorkerAsync();
                     break;
                 case "Auto":
                     AutoTradingTabBackground = activeTabColor;
@@ -647,6 +620,28 @@ namespace ShababTrade.ViewModels
         {
             SetMainTabsBackgroundToDefault();
             TradeHistoryTabBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D81D3C"));
+            MainMenuSpinnerVisibility = Visibility.Collapsed;
+            IsExchangeSelectionEnabled = true;
+        }
+
+        #endregion
+
+        #region SpotBackgroundWorker_DoWork
+
+        private void SpotBackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
+        {
+            BlockAllInputs(CurrentViewModel);
+            CurrentViewModel = new SpotViewModel(ExchangeUsers, SelectedExchange);
+        }
+
+        #endregion
+
+        #region SpotBackgroundWorker_RunWorkerCompleted
+
+        private void SpotBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            SetMainTabsBackgroundToDefault();
+            SpotTabBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D81D3C"));
             MainMenuSpinnerVisibility = Visibility.Collapsed;
             IsExchangeSelectionEnabled = true;
         }

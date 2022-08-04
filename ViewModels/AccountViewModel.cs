@@ -19,6 +19,7 @@ using LiveCharts.Wpf;
 using LiveCharts.Defaults;
 using System.ComponentModel;
 using System.Windows;
+using ShababTrade.Models;
 
 namespace ShababTrade.ViewModels
 {
@@ -27,40 +28,6 @@ namespace ShababTrade.ViewModels
         private BackgroundWorker backgroundWorker = new BackgroundWorker();
 
         #region Properties
-
-        #region Exchange Users
-
-        private List<ExchangeUser> _exchangeUsers = new List<ExchangeUser>();
-
-        public List<ExchangeUser> ExchangeUsers
-        {
-            get => _exchangeUsers;
-            set => Set(ref _exchangeUsers, value);
-        }
-
-        #endregion
-
-        #region Available Exchanges
-
-        private ObservableCollection<string> _availableExchanges = new ObservableCollection<string>();
-        public ObservableCollection<string> AvailableExchanges
-        {
-            get => _availableExchanges;
-            set => Set(ref _availableExchanges, value);
-        }
-
-        #endregion
-
-        #region Selected Exchange
-
-        private string _selectedExchange;
-        public string SelectedExchange
-        {
-            get => _selectedExchange;
-            set => Set(ref _selectedExchange, value);
-        }
-
-        #endregion
 
         #region Balances
 
@@ -154,74 +121,46 @@ namespace ShababTrade.ViewModels
 
         #region Open Account View 
 
-        public void OpenAccountView(List<ExchangeUser> exchangeUsers)
+        public void OpenAccountView(List<UserLoginInfo> exchangeUsers)
         {
             var currentExchange = exchangeUsers.Where(user => user.Exchange == SelectedExchange).First();
             SelectedExchange = currentExchange.Exchange;
 
-            switch (SelectedExchange)
-            {
-                case "Binance":
-                    GetAccountDataForBinanceUser();
-                    break;
-
-                case "Bitrue":
-                    GetAccountDataForBitrueUser();
-                    break;
-            }
+            GetAccountData(SelectedExchange);
         }
 
         #endregion
 
-        #region Get Account Data For Binance User
+        #region Get Account Data
 
-        private void GetAccountDataForBinanceUser()
+        private void GetAccountData(string selecterExchange)
         {
-            var binanceWalletInfo = new BinanceWalletInfo();
-            var binanceUser = ExchangeUsers.Where(user => user.Exchange == "Binance").First();
-            List<ICryptoBalance> binanceBalances = binanceWalletInfo.GetWalletInfo(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey));
-            var balances = new ObservableCollection<ICryptoBalance>(binanceBalances);
-            var totalBalance = binanceWalletInfo.GetAccountTotalBalance(binanceBalances);
+            UserLoginInfo userLoginInfo = ExchangeUsers.Where(user => user.Exchange == selecterExchange).First();
+            AppUser = new AppUser(selecterExchange, userLoginInfo);
 
-            var binanceDeposits = binanceWalletInfo.GetRecentDeposits(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(5);
-            var deposits = new ObservableCollection<IDeposit>(binanceDeposits);
+            
+            List<ICryptoBalance> balances = AppUser.WalletInfo.GetWalletInfo(new BitrueApiUser(userLoginInfo.PublicKey, userLoginInfo.PrivateKey));
+            var appBalances = new ObservableCollection<ICryptoBalance>(balances);
+            var totalBalance = AppUser.WalletInfo.GetAccountTotalBalance(balances);
 
-            var binanceWithdrawals = binanceWalletInfo.GetRecentWithdrawals(new BinanceApiUser(binanceUser.PublicKey, binanceUser.PrivateKey)).Take(10);
-            var withdrawals = new ObservableCollection<IWithdrawal>(binanceWithdrawals);
+            DateTime startTime = DateTime.Now.Subtract(TimeSpan.FromDays(365));
+            DateTime endTime = DateTime.Now;
 
-            Balances = balances;
+            var deposits = AppUser.WalletInfo.GetRecentDeposits(new BinanceApiUser(userLoginInfo.PublicKey, userLoginInfo.PrivateKey), "XRP", startTime, endTime).Take(8);
+            var appDeposits = new ObservableCollection<IDeposit>(deposits);
+
+            var withdrawals = AppUser.WalletInfo.GetRecentWithdrawals(new BinanceApiUser(userLoginInfo.PublicKey, userLoginInfo.PrivateKey), "XRP", startTime, endTime).Take(8);
+            var appWithdrawals = new ObservableCollection<IWithdrawal>(withdrawals);
+
+            Balances = appBalances;
             TotalBalance = totalBalance;
-            Deposits = deposits;
-            Withdrawals = withdrawals;
+            Deposits = appDeposits;
+            Withdrawals = appWithdrawals;
 
             Application.Current.Dispatcher.Invoke(() =>
             {
                 UpdateBalancesPieChart();
             });
-        }
-
-        #endregion
-
-        #region Get Account Data For Bitrue User
-
-        private void GetAccountDataForBitrueUser()
-        {
-            var bitrueWalletInfo = new BitrueWalletInfo();
-            var bitrueUser = ExchangeUsers.Where(user => user.Exchange == "Bitrue").First();
-            List<ICryptoBalance> bitrueBalances = bitrueWalletInfo.GetWalletInfo(new BitrueApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey));
-            var balances = new ObservableCollection<ICryptoBalance>(bitrueBalances);
-            var totalBalance = bitrueWalletInfo.GetAccountTotalBalance(bitrueBalances);
-
-            var bitrueDeposits = bitrueWalletInfo.GetRecentDeposits(new BinanceApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey), "XRP").Take(5);
-            var deposits = new ObservableCollection<IDeposit>(bitrueDeposits);
-
-            var bitrueWithdrawals = bitrueWalletInfo.GetRecentWithdrawals(new BinanceApiUser(bitrueUser.PublicKey, bitrueUser.PrivateKey), "XRP");
-            var withdrawals = new ObservableCollection<IWithdrawal>(bitrueWithdrawals);
-
-            Balances = balances;
-            TotalBalance = totalBalance;
-            Deposits = deposits;
-            Withdrawals = withdrawals;
         }
 
         #endregion
@@ -249,6 +188,20 @@ namespace ShababTrade.ViewModels
 
         #region Event Handlers
 
+        #region BackgroundWorker_DoWork
+
+        private void BackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
+        {
+            GetAccountData(SelectedExchange);
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                UpdateBalancesPieChart();
+            });
+        }
+
+        #endregion
+
         #region BackgroundWorker_RunWorkerCompleted
 
         private void BackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
@@ -259,32 +212,9 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region BackgroundWorker_DoWork
-
-        private void BackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
-        {
-            switch (SelectedExchange)
-            {
-                case "Binance":
-                    GetAccountDataForBinanceUser();
-                    break;
-
-                case "Bitrue":
-                    GetAccountDataForBitrueUser();
-                    break;
-            }
-
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                UpdateBalancesPieChart();
-            });
-        }
-
         #endregion
 
-        #endregion
-
-        public AccountViewModel(List<ExchangeUser> appUsers, string selectedExchange)
+        public AccountViewModel(List<UserLoginInfo> appUsers, string selectedExchange)
         {
             SelectedExchange = selectedExchange;
             SelectedExchangeChangedCommand = new RelayCommand(OnSelectedExchangeChangedCommandExecuted, CanSelectedExchangeChangedCommandExecute);

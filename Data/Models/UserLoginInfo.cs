@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
+﻿using System.Net;
 
 namespace ShababTrade.Data.Models
 {
-    internal class ExchangeUser
+    internal class UserLoginInfo
     {
         public int UserId { get; set; }
         public string Username { get; set; }
@@ -16,7 +11,7 @@ namespace ShababTrade.Data.Models
         public string PublicKey { get; }
         public string PrivateKey { get; }
 
-        public ExchangeUser(int userId, string username, string password, string exchange, string publicKey, string privateKey)
+        public UserLoginInfo(int userId, string username, string password, string exchange, string publicKey, string privateKey)
         {
             UserId = userId;
             Username = username;
@@ -26,7 +21,7 @@ namespace ShababTrade.Data.Models
             PrivateKey = privateKey;
         }
 
-        public ExchangeUser(int userId, NetworkCredential credential, string exchange, string publicKey, string privateKey)
+        public UserLoginInfo(int userId, NetworkCredential credential, string exchange, string publicKey, string privateKey)
         {
             UserId = userId;
             Username = credential.UserName;
@@ -35,6 +30,6 @@ namespace ShababTrade.Data.Models
             PublicKey = publicKey;
             PrivateKey = privateKey;
         }
-        public ExchangeUser() { }
+        public UserLoginInfo() { }
     }
 }

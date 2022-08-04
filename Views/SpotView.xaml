@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="ShababTrade.Views.SpotView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:ShababTrade.Views" 
+             xmlns:vm="clr-namespace:ShababTrade.ViewModels" 
+             xmlns:fa5="http://schemas.fontawesome.com/icons/" 
+             xmlns:ie="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="7*"/>
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.ColumnSpan="3" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource TextBlockH3}" VerticalAlignment="Center" Margin="10 0 0 0">
+                    <Run Text="{Binding Symbol24Stats.BaseAsset}"/>
+                    <Run Text="/"/>
+                    <Run Text="{Binding Symbol24Stats.QuoteAsset}"/>
+                </TextBlock>
+                <TextBlock Grid.Column="1" Grid.RowSpan="2" Style="{StaticResource TextBlockH3}" Text="{Binding Symbol24Stats.CurrentPrice}" Foreground="{Binding Symbol24Stats.CurrentPriceForeground}" VerticalAlignment="Center" Margin="30 0 0 0"/>
+                <TextBlock Grid.Column="2" Grid.Row="0" Style="{StaticResource TextBlockH4}" Text="24h Chg" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center"/>
+                <TextBlock Grid.Column="2" Grid.Row="1" Style="{StaticResource TextBlockH4}" Foreground="{Binding Symbol24Stats.PercentChangeForeground}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0">
+                    <Run Text="{Binding Symbol24Stats.Change24H}"/>
+                    <Run Text="%"/>
+                </TextBlock>
+                <TextBlock Grid.Column="3" Grid.Row="0" Style="{StaticResource TextBlockH4}" Text="24h High" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center"/>
+                <TextBlock Grid.Column="3" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.High24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
+                <TextBlock Grid.Column="4" Grid.Row="0" Style="{StaticResource TextBlockH4}" Text="24h Low" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center"/>
+                <TextBlock Grid.Column="4" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.Low24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
+                <TextBlock Grid.Column="5" Grid.Row="0" Style="{StaticResource TextBlockH4}" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center">
+                    <Run Text="24h Volume"/>
+                    <Run Text="{Binding Symbol24Stats.BaseAsset, StringFormat={}({0})}"/>
+                </TextBlock>
+                <TextBlock Grid.Column="5" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.BaseVolume24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
+                <TextBlock Grid.Column="6" Grid.Row="0" Style="{StaticResource TextBlockH4}" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center">
+                    <Run Text="24h Volume"/>
+                    <Run Text="{Binding Symbol24Stats.QuoteAsset, StringFormat={}({0})}"/>
+                </TextBlock>
+                <TextBlock Grid.Column="6" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.QuoteVolume24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
+
+                <StackPanel Grid.Column="7" Grid.RowSpan="2" Orientation="Horizontal" Margin="1 10 10 0" HorizontalAlignment="Right">
+
+                    <fa5:SvgAwesome x:Name="loginSpinnerIcon" Visibility="{Binding AccountLoadingSpinnerVisibility}" 
+                                    Icon="Solid_Spinner" Spin="True" Height="20" Width="20" Margin="10 -12 0 0" Foreground="White"/>
+                    
+                    <TextBlock Style="{StaticResource TextBlockH3}" Foreground="{StaticResource PrimaryColorBrush}" Text="Exchange:" Margin="8 0 0 0"/>
+
+                    <ComboBox Width="100" Height="25" Margin="5 0 0 0" Padding="5 2 5 0" HorizontalContentAlignment="Left" VerticalAlignment="Top"
+                              Background="{StaticResource SecondaryColorBrush}" Foreground="{StaticResource PrimaryTextBursh}" 
+                              ItemsSource="{Binding AvailableExchanges}" SelectedItem="{Binding SelectedExchange}"
+                              IsEnabled="{Binding IsExchangeSelectionEnabled}" materialDesign:ColorZoneAssist.Mode="PrimaryDark">
+                        <ie:Interaction.Triggers>
+                            <ie:EventTrigger EventName="SelectionChanged">
+                                <ie:InvokeCommandAction Command="{Binding SelectedExchangeChangedCommand}"  
+                                                        CommandParameter="{Binding SelectedExchange}"/>
+                            </ie:EventTrigger>
+                        </ie:Interaction.Triggers>
+                    </ComboBox>
+
+                </StackPanel>
+            </Grid>
+        </Border>
+
+    </Grid>
+</UserControl>

@@ -19,45 +19,10 @@ namespace ShababTrade.ViewModels
 {
     internal class TradeHistoryViewModel : BaseViewModel
     {
-        BackgroundWorker backgroundWorker = new BackgroundWorker();
+        BackgroundWorker backgroundWorker_GetFilledTrades = new BackgroundWorker();
+        BackgroundWorker backgroundWorker_GetSymbols = new BackgroundWorker();
 
         #region Properties
-
-        #region Exchange Users
-
-        private List<ExchangeUser> _exchangeUsers = new List<ExchangeUser>();
-
-        public List<ExchangeUser> ExchangeUsers
-        {
-            get => _exchangeUsers;
-            set => Set(ref _exchangeUsers, value);
-        }
-
-        #endregion
-
-        #region Available Exchanges
-
-        private ObservableCollection<string> _availableExchanges = new ObservableCollection<string>();
-        public ObservableCollection<string> AvailableExchanges
-        {
-            get => _availableExchanges;
-            set => Set(ref _availableExchanges, value);
-        }
-
-        #endregion
-
-        #region Selected Exchange
-
-        private string _selectedExchange;
-        public string SelectedExchange
-        {
-            get => _selectedExchange;
-            set => Set(ref _selectedExchange, value);
-        }
-
-        #endregion
-
-
 
         #region Base Assets Visibility
 
@@ -114,6 +79,17 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
+        #region Trade History Loading Spinner Visibility
+
+        private Visibility _tradeHistoryLoadingSpinnerVisibility = Visibility.Collapsed;
+
+        public Visibility TradeHistoryLoadingSpinnerVisibility
+        {
+            get => _tradeHistoryLoadingSpinnerVisibility;
+            set => Set(ref _tradeHistoryLoadingSpinnerVisibility, value);
+        }
+
+        #endregion
 
 
         #region Start Date
@@ -320,19 +296,6 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region Trade History Loading Spinner Visibility
-
-        private Visibility _tradeHistoryLoadingSpinnerVisibility = Visibility.Collapsed;
-
-        public Visibility TradeHistoryLoadingSpinnerVisibility
-        {
-            get => _tradeHistoryLoadingSpinnerVisibility;
-            set => Set(ref _tradeHistoryLoadingSpinnerVisibility, value);
-        }
-
-        #endregion
-
-
         #endregion
 
         #region Commands
@@ -472,7 +435,7 @@ namespace ShababTrade.ViewModels
             TradeHistory_CloseComboBoxes();
             IsExchangeSelectionEnabled = false;
             TradeHistoryLoadingSpinnerVisibility = Visibility.Visible;
-            backgroundWorker.RunWorkerAsync();
+            backgroundWorker_GetFilledTrades.RunWorkerAsync();
         }
 
         #endregion
@@ -550,16 +513,13 @@ namespace ShababTrade.ViewModels
 
         public void OnSelectedExchangeChangedCommandExecuted(object p)
         {
-            switch (SelectedExchange)
-            {
-                case "Binance":
-                    GetSymbolsForBinanceUser();
-                    break;
+            var userLoginInfo = ExchangeUsers.Where(user => user.Exchange == p.ToString()).First();
+            AppUser = new AppUser(p.ToString(), userLoginInfo);
 
-                case "Bitrue":
-                    GetSymbolsForBitrueUser();
-                    break;
-            }
+            TradeHistoryLoadingSpinnerVisibility = Visibility.Visible;
+            IsExchangeSelectionEnabled = false;
+
+            backgroundWorker_GetSymbols.RunWorkerAsync();
         }
 
         #endregion
@@ -596,65 +556,23 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
-        #region GetExchangeUserObject
+        #region GetSymbols
 
-        private IExchangeUser GetExchangeUserObject()
+        private void GetSymbols()
         {
-            ExchangeUser user;
-
-            switch (SelectedExchange)
-            {
-                case "Binance":
-                    user = ExchangeUsers.Where(user => user.Exchange == "Binance").First();
-                    return new BinanceApiUser(user.PublicKey, user.PrivateKey);
-                    break;
-                case "Bitrue":
-                    user = ExchangeUsers.Where(user => user.Exchange == "Bitrue").First();
-                    return new BitrueApiUser(user.PublicKey, user.PrivateKey);
-                    break;
-                default:
-                    user = ExchangeUsers.Where(user => user.Exchange == "Binance").First();
-                    return new BinanceApiUser(user.PublicKey, user.PrivateKey);
-            }
-        }
-
-        #endregion
-
-        #region Get Symbols For Binance User
-
-        private void GetSymbolsForBinanceUser()
-        {
-            var binanceExchangeInfo = new BinanceExchangeInfo();
-            binanceExchangeInfo = (BinanceExchangeInfo)binanceExchangeInfo.GetExchangeInfo();
+            var exchangeInfo = AppUser.ExchangeInfo.GetExchangeInfo();
 
             BaseAssets = new List<string>();
             QuoteAssets = new List<string>();
-            foreach (var asset in binanceExchangeInfo.ExchangeSymbols)
+
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                BaseAssets.Add(asset.BaseAsset);
-                QuoteAssets.Add(asset.QuoteAsset);
-            }
-
-            BaseAssets = BaseAssetsShared = BaseAssets.Distinct().ToList();
-            QuoteAssets = QuoteAssets.Distinct().ToList();       
-        }
-
-        #endregion
-
-        #region Get Account Data For Bitrue User
-
-        private void GetSymbolsForBitrueUser()
-        {
-            var bitrueExchangeInfo = new BitrueExchangeInfo();
-            bitrueExchangeInfo = (BitrueExchangeInfo)bitrueExchangeInfo.GetExchangeInfo();
-
-            BaseAssets = new List<string>();
-            QuoteAssets = new List<string>();
-            foreach (var asset in bitrueExchangeInfo.ExchangeSymbols)
-            {
-                BaseAssets.Add(asset.BaseAsset);
-                QuoteAssets.Add(asset.QuoteAsset);
-            }
+                foreach (var asset in exchangeInfo.ExchangeSymbols.ToList())
+                {
+                    BaseAssets.Add(asset.BaseAsset);
+                    QuoteAssets.Add(asset.QuoteAsset);
+                }
+            });            
 
             BaseAssets = BaseAssetsShared = BaseAssets.Distinct().ToList();
             QuoteAssets = QuoteAssets.Distinct().ToList();
@@ -668,7 +586,7 @@ namespace ShababTrade.ViewModels
 
         #region BackgroundWorker_RunWorkerCompleted
 
-        private void BackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        private void BackgroundWorker_GetFilledTrades_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
             IsExchangeSelectionEnabled = true;
             TradeHistoryLoadingSpinnerVisibility = Visibility.Collapsed;
@@ -687,14 +605,15 @@ namespace ShababTrade.ViewModels
 
         #region BackgroundWorker_DoWork
 
-        private void BackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
+        private void BackgroundWorker_GetFilledTrades_DoWork(object? sender, DoWorkEventArgs e)
         {
             try
             {
                 FilledTrades = new List<AppFilledTrade>();
                 FilledTradesShared = new List<IFilledTrade>();
                 IAccountInfo accountInfo = GetAccountInfoObject();
-                FilledTradesShared = accountInfo.GetTrades(GetExchangeUserObject(), BaseAsset + QuoteAsset);
+
+                FilledTradesShared = AppUser.AccountInfo.GetTrades(AppUser.ExchangeUser, BaseAsset + QuoteAsset);
                 if (Side != "ALL")
                 {
                     FilledTradesShared = FilledTradesShared.Where(trade => trade.Side.ToString() == Side).ToList();
@@ -723,9 +642,28 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
+        #region backgroundWorker_GetSymbols_RunWorkerCompleted
+
+        private void backgroundWorker_GetSymbols_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            TradeHistoryLoadingSpinnerVisibility = Visibility.Collapsed;
+            IsExchangeSelectionEnabled = true;
+        }
+
         #endregion
 
-        public TradeHistoryViewModel(List<ExchangeUser> appUsers, string selectedExchange)
+        #region backgroundWorker_GetSymbols_DoWork
+
+        private void backgroundWorker_GetSymbols_DoWork(object? sender, DoWorkEventArgs e)
+        {
+            GetSymbols();
+        }
+
+        #endregion
+
+        #endregion
+
+        public TradeHistoryViewModel(List<UserLoginInfo> appUsers, string selectedExchange)
         {
             SelectedExchange = selectedExchange;
             ExchangeUsers = appUsers;
@@ -770,8 +708,11 @@ namespace ShababTrade.ViewModels
             StartDate = DateTime.Today;
             EndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59);
 
-            backgroundWorker.DoWork += BackgroundWorker_DoWork;
-            backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
+            backgroundWorker_GetFilledTrades.DoWork += BackgroundWorker_GetFilledTrades_DoWork;
+            backgroundWorker_GetFilledTrades.RunWorkerCompleted += BackgroundWorker_GetFilledTrades_RunWorkerCompleted;
+
+            backgroundWorker_GetSymbols.DoWork += backgroundWorker_GetSymbols_DoWork;
+            backgroundWorker_GetSymbols.RunWorkerCompleted += backgroundWorker_GetSymbols_RunWorkerCompleted;
         }        
     }
 }

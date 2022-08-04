@@ -10,10 +10,10 @@ namespace ShababTrade.Data
 {
     internal class ShababTradeDataAccessor
     {
-        public static List<ExchangeUser> GetAllAppUsers()
+        public static List<UserLoginInfo> GetAllAppUsers()
         {
-            List<ExchangeUser> appUsers = new List<ExchangeUser>();
-            ExchangeUser user;
+            List<UserLoginInfo> appUsers = new List<UserLoginInfo>();
+            UserLoginInfo user;
 
             var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
 
@@ -33,7 +33,7 @@ namespace ShababTrade.Data
                     string publicKey = reader[4].ToString();
                     string privateKey = reader[5].ToString();
 
-                    user = new ExchangeUser(userId, username, password, exchange, publicKey, privateKey);
+                    user = new UserLoginInfo(userId, username, password, exchange, publicKey, privateKey);
                     appUsers.Add(user);
                 };
                 reader.Close();
@@ -43,10 +43,10 @@ namespace ShababTrade.Data
             return appUsers;
         } 
 
-        public static List<ExchangeUser> GetExchangeUsersByUsernameAndPawwsord(NetworkCredential credential)
+        public static List<UserLoginInfo> GetExchangeUsersByUsernameAndPawwsord(NetworkCredential credential)
         {
-            List<ExchangeUser> appUsers = new List<ExchangeUser>();
-            ExchangeUser user;
+            List<UserLoginInfo> appUsers = new List<UserLoginInfo>();
+            UserLoginInfo user;
 
             var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
 
@@ -71,7 +71,7 @@ namespace ShababTrade.Data
                     string publicKey = reader[4].ToString();
                     string privateKey = reader[5].ToString();
 
-                    user = new ExchangeUser(userId, credential, exchange, publicKey, privateKey);
+                    user = new UserLoginInfo(userId, credential, exchange, publicKey, privateKey);
                     appUsers.Add(user);
                 };
                 reader.Close();
@@ -111,7 +111,7 @@ namespace ShababTrade.Data
 
         public static bool TryGetExchangeUserByUsername(string username)
         {
-            List<ExchangeUser> exchangeUsers = new List<ExchangeUser>();
+            List<UserLoginInfo> exchangeUsers = new List<UserLoginInfo>();
             exchangeUsers = GetExchangeUsersByUsername(username);
             if (exchangeUsers.Count > 0)
                 return true;
@@ -218,10 +218,10 @@ namespace ShababTrade.Data
             }
         } 
 
-        private static List<ExchangeUser> GetExchangeUsersByUsername(string username)
+        private static List<UserLoginInfo> GetExchangeUsersByUsername(string username)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["ShababTrade"].ConnectionString;
-            List<ExchangeUser> exchangeUsers = new List<ExchangeUser>();
+            List<UserLoginInfo> exchangeUsers = new List<UserLoginInfo>();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -246,7 +246,7 @@ namespace ShababTrade.Data
                             var publicKey = (string)reader[4];
                             var privateKey = (string)reader[5];
 
-                            var exchangeUser = new ExchangeUser(userId, usernameFromDb, password, exchange, publicKey, privateKey);
+                            var exchangeUser = new UserLoginInfo(userId, usernameFromDb, password, exchange, publicKey, privateKey);
                             exchangeUsers.Add(exchangeUser);
                         }
                     }
@@ -294,7 +294,7 @@ namespace ShababTrade.Data
 
         private static bool AddApiKeysToUser(NetworkCredential credential, string exchange, string publicKey, string privateKey, SqlConnection connection, out string resultMessage)
         {
-            List<ExchangeUser> exchangeUsers;
+            List<UserLoginInfo> exchangeUsers;
 
             try
             {
@@ -307,7 +307,7 @@ namespace ShababTrade.Data
             }
 
             var currentExchangeUser = exchangeUsers.Where(user => user.Exchange == exchange);
-            ExchangeUser currentUser = new ExchangeUser();
+            UserLoginInfo currentUser = new UserLoginInfo();
 
             if (currentExchangeUser.Any())
             {

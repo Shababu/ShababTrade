@@ -3,9 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ShababTrade.Views" xmlns:behaviours="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:local="clr-namespace:ShababTrade.Views" 
+             xmlns:behaviours="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:ie="http://schemas.microsoft.com/xaml/behaviors" xmlns:fa5="http://schemas.fontawesome.com/icons/"
+             xmlns:ie="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:fa5="http://schemas.fontawesome.com/icons/"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1400">
     <Grid>
@@ -313,7 +315,7 @@
             <Button Content=">" Margin="5" Width="40" Padding="0" ToolTip="Next page" FontSize="12" 
                     Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding OpenNextPage_Command}"/>
             <Button Content=">>" Margin="5" Width="40" Padding="0" ToolTip="Last page" FontSize="12" 
-                    Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding OpenLastPage_Command}"/>
+                    Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding OpenLastPage_Command}" Cursor="Hand"/>
         </StackPanel>
 
     </Grid>
