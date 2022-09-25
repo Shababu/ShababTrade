@@ -432,6 +432,7 @@ namespace ShababTrade.ViewModels
         private bool CanSearchFilledTradesCommandExecute(object o) => true;
         private void OnSearchFilledTradesCommandEcexuted(object o)
         {
+            TradeHistorySectionVisibility = Visibility.Collapsed;
             TradeHistory_CloseComboBoxes();
             IsExchangeSelectionEnabled = false;
             TradeHistoryLoadingSpinnerVisibility = Visibility.Visible;
@@ -513,6 +514,10 @@ namespace ShababTrade.ViewModels
 
         public void OnSelectedExchangeChangedCommandExecuted(object p)
         {
+            TradeHistorySectionVisibility = Visibility.Collapsed;
+            FilledTradesShared = null;
+            FilledTrades = null;
+            TradуHistoryPaginationVisibility = Visibility.Collapsed;
             var userLoginInfo = ExchangeUsers.Where(user => user.Exchange == p.ToString()).First();
             AppUser = new AppUser(p.ToString(), userLoginInfo);
 
@@ -647,6 +652,10 @@ namespace ShababTrade.ViewModels
         private void backgroundWorker_GetSymbols_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
             TradeHistoryLoadingSpinnerVisibility = Visibility.Collapsed;
+            if (FilledTrades == null ||  FilledTrades.Count < 1)
+            {
+                TradeHistorySectionVisibility = Visibility.Collapsed;
+            }
             IsExchangeSelectionEnabled = true;
         }
 

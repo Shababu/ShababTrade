@@ -133,23 +133,30 @@ namespace ShababTrade.ViewModels
 
         #region Get Account Data
 
-        private void GetAccountData(string selecterExchange)
+        private void GetAccountData(string selectedExchange)
         {
-            UserLoginInfo userLoginInfo = ExchangeUsers.Where(user => user.Exchange == selecterExchange).First();
-            AppUser = new AppUser(selecterExchange, userLoginInfo);
+            UserLoginInfo userLoginInfo = ExchangeUsers.Where(user => user.Exchange == selectedExchange).First();
+            AppUser = new AppUser(selectedExchange, userLoginInfo);
 
             
-            List<ICryptoBalance> balances = AppUser.WalletInfo.GetWalletInfo(new BitrueApiUser(userLoginInfo.PublicKey, userLoginInfo.PrivateKey));
+            List<ICryptoBalance> balances = AppUser.WalletInfo.GetWalletInfo(AppUser.ExchangeUser);
             var appBalances = new ObservableCollection<ICryptoBalance>(balances);
             var totalBalance = AppUser.WalletInfo.GetAccountTotalBalance(balances);
 
-            DateTime startTime = DateTime.Now.Subtract(TimeSpan.FromDays(365));
+            DateTime startTime;
             DateTime endTime = DateTime.Now;
 
-            var deposits = AppUser.WalletInfo.GetRecentDeposits(new BinanceApiUser(userLoginInfo.PublicKey, userLoginInfo.PrivateKey), "XRP", startTime, endTime).Take(8);
+            startTime = DateTime.Now.Subtract(TimeSpan.FromDays(90));
+
+            var deposits = AppUser.WalletInfo.GetRecentDeposits(AppUser.ExchangeUser, "XRP", startTime, endTime).Take(8);
             var appDeposits = new ObservableCollection<IDeposit>(deposits);
 
-            var withdrawals = AppUser.WalletInfo.GetRecentWithdrawals(new BinanceApiUser(userLoginInfo.PublicKey, userLoginInfo.PrivateKey), "XRP", startTime, endTime).Take(8);
+            foreach(var appDeposit in appDeposits)
+            {
+                appDeposit.Coin = appDeposit.Coin.ToUpper();
+            }
+
+            var withdrawals = AppUser.WalletInfo.GetRecentWithdrawals(AppUser.ExchangeUser, "XRP", startTime, endTime).Take(8);
             var appWithdrawals = new ObservableCollection<IWithdrawal>(withdrawals);
 
             Balances = appBalances;

@@ -26,7 +26,7 @@
                 <views:TradeHistoryView/>
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type viewModels:SpotViewModel}">
+            <DataTemplate DataType="{x:Type viewModels:MainWindowViewModel}">
                 <views:SpotView/>
             </DataTemplate>
 

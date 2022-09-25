@@ -8,14 +8,30 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BinanceAPI" Version="1.0.6" />
-    <PackageReference Include="BitrueAPI" Version="1.0.4" />
+    <PackageReference Include="BinanceAPI" Version="1.0.7" />
+    <PackageReference Include="BitrueAPI" Version="1.0.5" />
     <PackageReference Include="FancyCandles" Version="2.7.1" />
     <PackageReference Include="FontAwesome5" Version="2.1.11" />
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
     <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+    <PackageReference Include="SciChart" Version="6.6.0.26505" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>

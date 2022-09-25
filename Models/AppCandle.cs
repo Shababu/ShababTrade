@@ -7,7 +7,7 @@ using TradingCommonTypes;
 
 namespace ShababTrade.Models
 {
-    public class Candle : FancyCandles.ICandle
+    public class AppCandle : FancyCandles.ICandle
     {
         public DateTime t { get; set; }
         public double O { get; set; }
@@ -16,7 +16,7 @@ namespace ShababTrade.Models
         public double C { get; set; }
         public double V { get; set; }
 
-        public Candle(DateTime t, double O, double H, double L, double C, double V)
+        public AppCandle(DateTime t, double O, double H, double L, double C, double V)
         {
             this.t = t;
             this.O = O;
@@ -26,9 +26,9 @@ namespace ShababTrade.Models
             this.V = V;
         }
 
-        public static Candle ConvertToCandle(ICandle exchangeCandle)
+        public static AppCandle ConvertToCandle(ICandle exchangeCandle)
         {
-            return new Candle(exchangeCandle.OpenTime, exchangeCandle.Open, exchangeCandle.High, exchangeCandle.Low, exchangeCandle.Close, exchangeCandle.Volume);
+            return new AppCandle(exchangeCandle.OpenTime, exchangeCandle.Open, exchangeCandle.High, exchangeCandle.Low, exchangeCandle.Close, exchangeCandle.Volume);
         }
     }
 }

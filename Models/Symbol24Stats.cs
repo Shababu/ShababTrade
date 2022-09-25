@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using TradingCommonTypes;
 
 namespace ShababTrade.Models
 {
@@ -42,6 +44,16 @@ namespace ShababTrade.Models
 
             SetCurrentPriceColor(prevStats, currentPrice);
             SetPercentChangeColor(change24H);
+        }
+
+        public Symbol24Stats(IAssetStatus assetStatus, string newSymbol, decimal precision)
+        {
+            Symbol = newSymbol;
+            CurrentPrice = assetStatus.LastPrice;
+            CurrentPrice = Math.Round(CurrentPrice, (int)precision);
+                //Price > 99 ? Math.Round(Price, 2).ToString() : Price > 0.99M ? Math.Round(Price, 4).ToString() : Price > 0.0099M ? Math.Round(Price, 6).ToString() : Math.Round(Price, 9).ToString();
+            Change24H = Math.Round(assetStatus.PriceChangePercent, 2);
+            PercentChangeForeground = assetStatus.PriceChangePercent < 0.00 ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Color.FromArgb(255, 12, 202, 0));
         }
 
         #region Methods

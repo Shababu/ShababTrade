@@ -9,7 +9,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:ie="http://schemas.microsoft.com/xaml/behaviors" 
         xmlns:customcontrols="clr-namespace:ShababTrade.CustomControls"
-        xmlns:fa5="http://schemas.fontawesome.com/icons/"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/" xmlns:fc="clr-namespace:FancyCandles;assembly=FancyCandles"
         mc:Ignorable="d"
         Title="Shabab Trade" Height="450" Width="800" 
         WindowState="Maximized" Background="#FF111111">
@@ -137,6 +137,12 @@
 
         <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding CurrentViewModel}" Visibility="{Binding MainMenuVisibility}">
             
+        </ContentControl>
+
+        <ContentControl Grid.Row="1" Grid.Column="0" Visibility="{Binding SpotVisibility}">
+            <ContentControl.Content>
+                <views:SpotView/>
+            </ContentControl.Content>
         </ContentControl>
     </Grid>
 </Window>

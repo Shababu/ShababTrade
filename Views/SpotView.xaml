@@ -13,117 +13,155 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
 
-    <ScrollViewer VerticalScrollBarVisibility="Hidden">
-        
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="8*"/>
-                <RowDefinition Height="5*"/>
-            </Grid.RowDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="8*"/>
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
 
-            <Border Grid.ColumnSpan="3" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
+        <Border Grid.ColumnSpan="3" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource TextBlockH3}" VerticalAlignment="Center" Margin="10 0 0 0">
+                    <Run Text="{Binding Symbol24Stats.BaseAsset}"/>
+                    <Run Text="/"/>
+                    <Run Text="{Binding Symbol24Stats.QuoteAsset}"/>
+                </TextBlock>
+                <TextBlock Grid.Column="1" Grid.RowSpan="2" Style="{StaticResource TextBlockH3}" Text="{Binding Symbol24Stats.CurrentPrice}" Foreground="{Binding Symbol24Stats.CurrentPriceForeground}" VerticalAlignment="Center" Margin="30 0 0 0"/>
+                <TextBlock Grid.Column="2" Grid.Row="0" Style="{StaticResource TextBlockH4}" Text="24h Chg" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center"/>
+                <TextBlock Grid.Column="2" Grid.Row="1" Style="{StaticResource TextBlockH4}" Foreground="{Binding Symbol24Stats.PercentChangeForeground}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0">
+                    <Run Text="{Binding Symbol24Stats.Change24H}"/>
+                    <Run Text="%"/>
+                </TextBlock>
+                <TextBlock Grid.Column="3" Grid.Row="0" Style="{StaticResource TextBlockH4}" Text="24h High" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center"/>
+                <TextBlock Grid.Column="3" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.High24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
+                <TextBlock Grid.Column="4" Grid.Row="0" Style="{StaticResource TextBlockH4}" Text="24h Low" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center"/>
+                <TextBlock Grid.Column="4" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.Low24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
+                <TextBlock Grid.Column="5" Grid.Row="0" Style="{StaticResource TextBlockH4}" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center">
+                    <Run Text="24h Volume"/>
+                    <Run Text="{Binding Symbol24Stats.BaseAsset, StringFormat={}({0})}"/>
+                </TextBlock>
+                <TextBlock Grid.Column="5" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.BaseVolume24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
+                <TextBlock Grid.Column="6" Grid.Row="0" Style="{StaticResource TextBlockH4}" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center">
+                    <Run Text="24h Volume"/>
+                    <Run Text="{Binding Symbol24Stats.QuoteAsset, StringFormat={}({0})}"/>
+                </TextBlock>
+                <TextBlock Grid.Column="6" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.QuoteVolume24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
+
+                <StackPanel Grid.Column="7" Grid.RowSpan="2" Orientation="Horizontal" Margin="1 10 10 0" HorizontalAlignment="Right">
+
+                    <fa5:SvgAwesome x:Name="loginSpinnerIcon" Visibility="{Binding SpotSpinnerVisibility}" 
+                                    Icon="Solid_Spinner" Spin="True" Height="20" Width="20" Margin="10 -12 0 0" Foreground="White"/>
+
+                    <TextBlock Style="{StaticResource TextBlockH3}" Foreground="{StaticResource PrimaryColorBrush}" Text="Exchange:" Margin="8 0 0 0"/>
+
+                    <ComboBox Width="100" Height="25" Margin="5 0 0 0" Padding="5 2 5 0" HorizontalContentAlignment="Left" VerticalAlignment="Top"
+                                Background="{StaticResource SecondaryColorBrush}" Foreground="{StaticResource PrimaryTextBursh}" 
+                                ItemsSource="{Binding AvailableExchanges}" SelectedItem="{Binding SelectedExchange}"
+                                IsEnabled="{Binding IsExchangeSelectionEnabled}" materialDesign:ColorZoneAssist.Mode="PrimaryDark">
+                        <ie:Interaction.Triggers>
+                            <ie:EventTrigger EventName="SelectionChanged">
+                                <ie:InvokeCommandAction Command="{Binding Spot_SelectedExchangeChangedCommand}"  
+                                                        CommandParameter="{Binding SelectedExchange}"/>
+                            </ie:EventTrigger>
+                        </ie:Interaction.Triggers>
+                    </ComboBox>
+
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="0" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
+            <fc:CandleChart BearishCandleStroke="{StaticResource PrimaryColorBrush}" BearishCandleFill="{StaticResource PrimaryColorBrush}" 
+                            BearishVolumeBarFill="{StaticResource PrimaryColorBrush}" BullishCandleFill="#25D695" 
+                            BullishCandleStroke="#25D695" BullishVolumeBarFill="#25D695" 
+                            ChartAreaBackground="Transparent" ChartAreaBorderColor="Transparent" 
+                            Background="Transparent" Foreground="White" Name="Chart" 
+                            AxisTickColor="White" ScrollBarBackground="Transparent"
+                            GapBetweenPriceTickLabels="8" CandlesSource="{Binding SpotCandles}" 
+                            Padding="2" Margin="0 0 0 0" LegendText=""/>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
+                    <Border Grid.ColumnSpan="2" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Margin="5">
+                        <TextBox BorderThickness="0" Padding="0" Margin="6 0 15 0" MinHeight="30" Text="{Binding DesiredSymbol}" CharacterCasing="Upper" Foreground="White" VerticalContentAlignment="Center"/>
+                    </Border>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Grid.Column="0" Grid.RowSpan="2" Style="{StaticResource TextBlockH3}" VerticalAlignment="Center" Margin="10 0 0 0">
-                        <Run Text="{Binding Symbol24Stats.BaseAsset}"/>
-                        <Run Text="/"/>
-                        <Run Text="{Binding Symbol24Stats.QuoteAsset}"/>
-                    </TextBlock>
-                    <TextBlock Grid.Column="1" Grid.RowSpan="2" Style="{StaticResource TextBlockH3}" Text="{Binding Symbol24Stats.CurrentPrice}" Foreground="{Binding Symbol24Stats.CurrentPriceForeground}" VerticalAlignment="Center" Margin="30 0 0 0"/>
-                    <TextBlock Grid.Column="2" Grid.Row="0" Style="{StaticResource TextBlockH4}" Text="24h Chg" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center"/>
-                    <TextBlock Grid.Column="2" Grid.Row="1" Style="{StaticResource TextBlockH4}" Foreground="{Binding Symbol24Stats.PercentChangeForeground}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0">
-                        <Run Text="{Binding Symbol24Stats.Change24H}"/>
-                        <Run Text="%"/>
-                    </TextBlock>
-                    <TextBlock Grid.Column="3" Grid.Row="0" Style="{StaticResource TextBlockH4}" Text="24h High" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center"/>
-                    <TextBlock Grid.Column="3" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.High24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
-                    <TextBlock Grid.Column="4" Grid.Row="0" Style="{StaticResource TextBlockH4}" Text="24h Low" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center"/>
-                    <TextBlock Grid.Column="4" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.Low24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
-                    <TextBlock Grid.Column="5" Grid.Row="0" Style="{StaticResource TextBlockH4}" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center">
-                        <Run Text="24h Volume"/>
-                        <Run Text="{Binding Symbol24Stats.BaseAsset, StringFormat={}({0})}"/>
-                    </TextBlock>
-                    <TextBlock Grid.Column="5" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.BaseVolume24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
-                    <TextBlock Grid.Column="6" Grid.Row="0" Style="{StaticResource TextBlockH4}" VerticalAlignment="Center" Margin="30 0 0 0" TextAlignment="Center">
-                        <Run Text="24h Volume"/>
-                        <Run Text="{Binding Symbol24Stats.QuoteAsset, StringFormat={}({0})}"/>
-                    </TextBlock>
-                    <TextBlock Grid.Column="6" Grid.Row="1" Style="{StaticResource TextBlockH4}" Text="{Binding Symbol24Stats.QuoteVolume24H}" VerticalAlignment="Center" TextAlignment="Center" Margin="30 0 0 0"/>
-
-                    <StackPanel Grid.Column="7" Grid.RowSpan="2" Orientation="Horizontal" Margin="1 10 10 0" HorizontalAlignment="Right">
-
-                        <fa5:SvgAwesome x:Name="loginSpinnerIcon" Visibility="{Binding AccountLoadingSpinnerVisibility}" 
-                                        Icon="Solid_Spinner" Spin="True" Height="20" Width="20" Margin="10 -12 0 0" Foreground="White"/>
-
-                        <TextBlock Style="{StaticResource TextBlockH3}" Foreground="{StaticResource PrimaryColorBrush}" Text="Exchange:" Margin="8 0 0 0"/>
-
-                        <ComboBox Width="100" Height="25" Margin="5 0 0 0" Padding="5 2 5 0" HorizontalContentAlignment="Left" VerticalAlignment="Top"
-                                  Background="{StaticResource SecondaryColorBrush}" Foreground="{StaticResource PrimaryTextBursh}" 
-                                  ItemsSource="{Binding AvailableExchanges}" SelectedItem="{Binding SelectedExchange}"
-                                  IsEnabled="{Binding IsExchangeSelectionEnabled}" materialDesign:ColorZoneAssist.Mode="PrimaryDark">
-                            <ie:Interaction.Triggers>
-                                <ie:EventTrigger EventName="SelectionChanged">
-                                    <ie:InvokeCommandAction Command="{Binding SelectedExchangeChangedCommand}"  
-                                                            CommandParameter="{Binding SelectedExchange}"/>
-                                </ie:EventTrigger>
-                            </ie:Interaction.Triggers>
-                        </ComboBox>
-
-                    </StackPanel>
                 </Grid>
-            </Border>
 
-            <Border Grid.Row="1" Grid.Column="0" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
-                <fc:CandleChart BearishCandleStroke="{StaticResource PrimaryColorBrush}" BearishCandleFill="{StaticResource PrimaryColorBrush}" 
-                                BearishVolumeBarFill="{StaticResource PrimaryColorBrush}" BullishCandleFill="#25D695" 
-                                BullishCandleStroke="#25D695" BullishVolumeBarFill="#25D695" 
-                                ChartAreaBackground="Transparent" ChartAreaBorderColor="Transparent" 
-                                Background="Transparent" Foreground="White" Name="Chart" 
-                                AxisTickColor="White" ScrollBarBackground="Transparent"
-                                GapBetweenPriceTickLabels="8" CandlesSource="{Binding SpotCandles}" 
-                                Padding="2" Margin="0 0 0 0" LegendText=""/>
-            </Border>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
+                    <ListBox ItemsSource="{Binding SpotSymbols}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" >
+                                    <Border BorderThickness="0 0 0 0" BorderBrush="Black" Height="32" >
+                                        <TextBlock  Width="105" Text="{Binding Symbol}" HorizontalAlignment="Left" Margin="6 0 0 0" VerticalAlignment="Center" FontSize="10" FontFamily="Franklin Gothic Medium" Foreground="White"/>
+                                    </Border>
+                                    <Border BorderThickness="0 0 0 0" BorderBrush="Black" >
+                                        <TextBlock  Width="82"  Text="{Binding CurrentPrice}" Margin="20 0 0 0" VerticalAlignment="Center" FontSize="10" FontFamily="Franklin Gothic Medium" Foreground="White"/>
+                                    </Border>
+                                    <!--<Border BorderThickness="0 0 0 0" BorderBrush="Black" HorizontalAlignment="Right">
+                                        <TextBlock  Width="60" Margin="30 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{Binding PercentChangeForeground}" FontSize="10" FontFamily="Franklin Gothic Medium">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{} {0}%">
+                                                    <Binding Path="PriceChangePercent"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </Border>-->
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+            </Grid>
+        </Border>
 
-            <Border Grid.Row="1" Grid.Column="1" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
+        <Border Grid.Row="1" Grid.Column="2" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
 
-            </Border>
+        </Border>
 
-            <Border Grid.Row="1" Grid.Column="2" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
+        <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
 
-            </Border>
+        </Border>
 
-            <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
+        <Border Grid.Row="2" Grid.Column="0" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
 
-            </Border>
+        </Border>
 
-            <Border Grid.Row="2" Grid.Column="0" BorderThickness="0.5" BorderBrush="DarkGray" Margin="5" CornerRadius="5" >
-
-            </Border>
-
-        </Grid>
-        
-    </ScrollViewer>
+    </Grid>
 
 </UserControl>

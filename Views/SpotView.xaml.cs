@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 namespace ShababTrade.Views
 {
     /// <summary>
-    /// Логика взаимодействия для SpotView.xaml
+    /// Interaction logic for SpotView.xaml
     /// </summary>
     public partial class SpotView : UserControl
     {

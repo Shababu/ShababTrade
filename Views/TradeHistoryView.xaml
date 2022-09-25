@@ -184,6 +184,7 @@
                                         <behaviours:InvokeCommandAction Command="{Binding BaseAssetSelected_Command}"/>
                                     </behaviours:EventTrigger>
                                 </behaviours:Interaction.Triggers>
+                                
                             </ListBox>
                         </Border>
                     </StackPanel>

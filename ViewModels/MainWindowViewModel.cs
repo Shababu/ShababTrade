@@ -1,8 +1,10 @@
 ﻿using BinanceApiLibrary;
 using BitrueApiLibrary;
+using FancyCandles;
 using ShababTrade.Commands;
 using ShababTrade.Data;
 using ShababTrade.Data.Models;
+using ShababTrade.Models;
 using ShababTrade.ViewModels.Base;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net;
 using System.Security;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -19,13 +22,12 @@ using TradingCommonTypes;
 
 namespace ShababTrade.ViewModels
 {
-    internal class MainWindowViewModel : BaseViewModel
+    internal partial class MainWindowViewModel : BaseViewModel
     {
         private BackgroundWorker loginBackgroundWorker = new BackgroundWorker();
         private BackgroundWorker accountBackgroundWorker = new BackgroundWorker();
         private BackgroundWorker tradeHistoryBackgroundWorker = new BackgroundWorker();
         private BackgroundWorker spotBackgroundWorker = new BackgroundWorker();
-        private BackgroundWorker futuresBackgroundWorker = new BackgroundWorker();
 
         #region Properties
 
@@ -345,6 +347,7 @@ namespace ShababTrade.ViewModels
 
         #endregion
 
+
         #endregion
 
         #region Commands
@@ -359,6 +362,18 @@ namespace ShababTrade.ViewModels
         {
             var activeTabColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D81D3C"));
 
+            if(GetChartInfoTask?.Status == TaskStatus.RanToCompletion && Get24hStatsTask?.Status == TaskStatus.RanToCompletion)
+            {
+                GetChartInfoTask.Dispose();
+                Get24hStatsTask.Dispose();
+            }
+
+            if (p as string != "Spot")
+            {
+                isSpotNeedsToBeCancelled = true;
+                SpotVisibility = Visibility.Collapsed;
+            }
+
             switch (p as string)
             {
                 case "Account":
@@ -372,9 +387,10 @@ namespace ShababTrade.ViewModels
                     tradeHistoryBackgroundWorker.RunWorkerAsync();
                     break;
                 case "Spot":
-                    tradeHistoryBackgroundWorker.DoWork += SpotBackgroundWorker_DoWork;
-                    tradeHistoryBackgroundWorker.RunWorkerCompleted += SpotBackgroundWorker_RunWorkerCompleted;
-                    tradeHistoryBackgroundWorker.RunWorkerAsync();
+                    isSpotNeedsToBeCancelled = false;
+                    spotBackgroundWorker.DoWork += SpotBackgroundWorker_DoWork;
+                    spotBackgroundWorker.RunWorkerCompleted += SpotBackgroundWorker_RunWorkerCompleted;
+                    spotBackgroundWorker.RunWorkerAsync();
                     break;
                 case "Auto":
                     AutoTradingTabBackground = activeTabColor;
@@ -547,10 +563,10 @@ namespace ShababTrade.ViewModels
                 ExchangeUsers = ShababTradeDataAccessor.GetExchangeUsersByUsernameAndPawwsord(new NetworkCredential(Username, Password));
                 if (ExchangeUsers.Count > 0)
                 {
-                    List<string> avaliableExchanges = new List<string>();
+                    AvailableExchanges = new ObservableCollection<string>();
                     foreach (var user in ExchangeUsers)
                     {
-                        avaliableExchanges.Add(user.Exchange);
+                        AvailableExchanges.Add(user.Exchange);
                     }
                     CurrentViewModel = new AccountViewModel(ExchangeUsers, SelectedExchange);
                     LoginViewVisibility = Visibility.Collapsed;
@@ -631,19 +647,25 @@ namespace ShababTrade.ViewModels
         private void SpotBackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
         {
             BlockAllInputs(CurrentViewModel);
-            CurrentViewModel = new SpotViewModel(ExchangeUsers, SelectedExchange);
+            //CurrentViewModel = new SpotViewModel(ExchangeUsers, SelectedExchange);
+            CurrentViewModel = null;
         }
 
         #endregion
 
         #region SpotBackgroundWorker_RunWorkerCompleted
 
-        private void SpotBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        private async void SpotBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
             SetMainTabsBackgroundToDefault();
             SpotTabBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D81D3C"));
             MainMenuSpinnerVisibility = Visibility.Collapsed;
             IsExchangeSelectionEnabled = true;
+
+            GetChartInfoTask = Task.Run(() => GetChartDataAsync());
+            Get24hStatsTask = Task.Run(() => Get24Stats());
+
+            SpotVisibility = Visibility.Visible;
         }
 
         #endregion
@@ -656,9 +678,14 @@ namespace ShababTrade.ViewModels
             LoginCommand = new RelayCommand(OnLoginCommandExecuted, CanLoginCommandExecute);
             OpenSignUpViewCommand = new RelayCommand(OnOpenSignUpViewCommandExecuted, CanOpenSignUpViewCommandExecute);
             SelectMainMenuTabCommand = new RelayCommand(OnSelectMainMenuTabCommandExecuted, CanSelectMainMenuTabCommandExecute);
+            Spot_SelectedExchangeChangedCommand = new RelayCommand(OnSpot_SelectedExchangeChangedCommandExecuted, CanSpot_SelectedExchangeChangedCommandExecute);
 
             loginBackgroundWorker.DoWork += LoginBackgroundWorker_DoWork;
             loginBackgroundWorker.RunWorkerCompleted += LoginBackgroundWorker_RunWorkerCompleted;
-        }        
+
+            spotBackgroundWorker_GetTradingPairs.DoWork += SpotBackgroundWorker_GetTradingPairs_DoWork;
+            spotBackgroundWorker_GetTradingPairs.RunWorkerCompleted += SpotBackgroundWorker_GetTradingPairs_RunWorkerCompleted;
+
+        }
     }
 }
